@@ -1,0 +1,15 @@
+{
+  "restartable": "rs",
+  "verbose": true,
+  "ignore": [
+    ".git",
+    "node_modules",
+    "dist",
+    "Dockerfile",
+    "Dockerfile.dev",
+    ".dockerignore",
+    "**/*.ts"
+  ],
+  "exec": "npm run start:dev --watch",
+  "ext": "js,json,html,css,hbs,key"
+}
