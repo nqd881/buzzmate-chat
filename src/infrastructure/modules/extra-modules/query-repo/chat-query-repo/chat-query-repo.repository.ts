@@ -599,11 +599,11 @@ export class ChatQueryRepo implements IChatQueryRepo {
             ],
             "__messages"
           ),
-          // Unwind("$__messages", true),
-          // // Set({
-          // //   __messages: AggOps.IfNull("$__messages", null),
-          // // }),
-          // ReplaceRoot("$__messages"),
+          Unwind("$__messages", true),
+          Set({
+            __messages: AggOps.IfNull("$__messages", {}),
+          }),
+          ReplaceRoot("$__messages"),
         ];
       }
 
@@ -624,11 +624,11 @@ export class ChatQueryRepo implements IChatQueryRepo {
             ],
             "__messages"
           ),
-          // Unwind("$__messages", true),
-          // // Set({
-          // //   __messages: AggOps.IfNull("$__messages", null),
-          // // }),
-          // ReplaceRoot("$__messages"),
+          Unwind("$__messages", true),
+          Set({
+            __messages: AggOps.IfNull("$__messages", {}),
+          }),
+          ReplaceRoot("$__messages"),
         ];
       }
 
@@ -649,11 +649,11 @@ export class ChatQueryRepo implements IChatQueryRepo {
             ],
             "__messages"
           ),
-          // Unwind("$__messages", true),
-          // // Set({
-          // //   __messages: AggOps.IfNull("$__messages", null),
-          // // }),
-          // ReplaceRoot("$__messages"),
+          Unwind("$__messages", true),
+          Set({
+            __messages: AggOps.IfNull("$__messages", {}),
+          }),
+          ReplaceRoot("$__messages"),
         ];
       }
     };
