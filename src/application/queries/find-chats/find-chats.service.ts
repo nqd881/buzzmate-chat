@@ -14,13 +14,14 @@ export class FindChatsService implements IQueryHandler {
   async execute(query: FindChatsQuery) {
     const { userId } = query.metadata;
 
-    const { byIds, limit, fave, archived } = query;
+    const { byIds, limit, fave, archived, returnPersonal } = query;
 
     const chats = await this.chatQueryRepo.getChats(userId, {
       byIds,
       limit,
       fave,
       archived,
+      returnPersonal,
     });
 
     return chats || [];

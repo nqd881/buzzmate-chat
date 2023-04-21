@@ -12,6 +12,11 @@ export class FindUsersService implements IQueryHandler {
   async execute(query: FindUsersQuery) {
     const { limit, byIds, byEmails, byNames } = query;
 
-    return this.chatQueryRepo.getUsers();
+    return this.chatQueryRepo.getUsers({
+      limit,
+      byIds,
+      byEmails,
+      byNames,
+    });
   }
 }

@@ -12,7 +12,7 @@ export class GetChatsController {
   @Get()
   @UseGuards(AuthGuard)
   async getAllChats(@Req() req: Request, @Query() queries: GetChatsQuery) {
-    const { ids, limit } = queries;
+    const { ids, limit, personal } = queries;
 
     const query = new FindChatsQuery({
       metadata: {
@@ -20,6 +20,7 @@ export class GetChatsController {
       },
       byIds: ids,
       limit,
+      returnPersonal: personal,
     });
 
     try {

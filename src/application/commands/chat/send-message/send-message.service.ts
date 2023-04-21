@@ -105,39 +105,39 @@ export class SendMessageService implements ICommandHandler {
     });
   }
 
-  private buildContentWithSingleFile(
-    prependToSave: any[],
-    chatId: ChatId,
-    message: string,
-    file: File
-  ) {
-    switch (this.getFileType(file)) {
-      case "image": {
-        const newPhoto = this.createPhoto(prependToSave, file, chatId);
+  // private buildContentWithSingleFile(
+  //   prependToSave: any[],
+  //   chatId: ChatId,
+  //   message: string,
+  //   file: File
+  // ) {
+  //   switch (this.getFileType(file)) {
+  //     case "image": {
+  //       const newPhoto = this.createPhoto(prependToSave, file, chatId);
 
-        return new MessageContentPhoto({
-          caption: message,
-          photoId: newPhoto.id,
-        });
-      }
-      case "video": {
-        const newVideo = this.createVideo(prependToSave, file, chatId);
+  //       return new MessageContentPhoto({
+  //         caption: message,
+  //         photoId: newPhoto.id,
+  //       });
+  //     }
+  //     case "video": {
+  //       const newVideo = this.createVideo(prependToSave, file, chatId);
 
-        return new MessageContentVideo({
-          caption: message,
-          videoId: newVideo.id,
-        });
-      }
-      default: {
-        const newDocument = this.createDocument(prependToSave, file, chatId);
+  //       return new MessageContentVideo({
+  //         caption: message,
+  //         videoId: newVideo.id,
+  //       });
+  //     }
+  //     default: {
+  //       const newDocument = this.createDocument(prependToSave, file, chatId);
 
-        return new MessageContentDocument({
-          caption: message,
-          documentId: newDocument.id,
-        });
-      }
-    }
-  }
+  //       return new MessageContentDocument({
+  //         caption: message,
+  //         documentId: newDocument.id,
+  //       });
+  //     }
+  //   }
+  // }
 
   private buildContentWithMultiFiles(
     prependToSave: any[],
@@ -193,14 +193,14 @@ export class SendMessageService implements ICommandHandler {
       case 0: {
         return this.buildContentWithoutFile(message);
       }
-      case 1: {
-        return this.buildContentWithSingleFile(
-          prependToSave,
-          chatId,
-          message,
-          files[0]
-        );
-      }
+      // case 1: {
+      //   return this.buildContentWithSingleFile(
+      //     prependToSave,
+      //     chatId,
+      //     message,
+      //     files[0]
+      //   );
+      // }
       default: {
         return this.buildContentWithMultiFiles(
           prependToSave,
@@ -264,13 +264,15 @@ export class SendMessageService implements ICommandHandler {
 
     await Promise.all(prependToSave.map((promiseBuilder) => promiseBuilder()));
 
-    newFiles.forEach((newFile, index) => {
-      this.fileStorageService.saveChatFile(
-        chatId,
-        newFile,
-        files[index].content
-      );
-    });
+    await Promise.all(
+      newFiles.map((newFile, index) =>
+        this.fileStorageService.saveChatFile(
+          chatId,
+          newFile,
+          files[index].content
+        )
+      )
+    );
 
     await this.messageRepo.save(newMessage);
 

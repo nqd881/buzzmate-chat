@@ -115,7 +115,7 @@ export const Project = (Project: {
 
   const dotInclude = dot(Include || {});
   const dotExclude = dot(Exclude || {});
-  const dotFields = dot(Fields || {});
+  // const dotFields = dot(Fields || {});
 
   Object.keys(dotExclude).forEach((field) => {
     if (dotExclude[field] === 0) specifications[field] = 0;
@@ -125,7 +125,9 @@ export const Project = (Project: {
     if (dotInclude[field] === 1) specifications[field] = 1;
   });
 
-  specifications = _.merge(specifications, dotFields);
+  // specifications = _.merge(specifications, dotFields);
+
+  specifications = _.merge(specifications, Fields);
 
   return {
     $project: specifications,

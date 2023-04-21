@@ -3,9 +3,9 @@ import {
   DomainEventName,
 } from "@domain/utils/domain-event-name";
 import EventEmitter2 from "eventemitter2";
-import {DomainEvent} from "./domain-event";
-import {Entity} from "./entity";
-import {EntityId} from "./entity-id";
+import { DomainEvent } from "./domain-event";
+import { Entity } from "./entity";
+import { EntityId } from "./entity-id";
 
 export type UpdateFn = () => void;
 

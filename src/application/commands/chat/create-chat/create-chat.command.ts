@@ -1,8 +1,8 @@
-import {Command, CommandProps} from "@libs/ddd";
+import { Command, CommandProps } from "@libs/ddd";
 
 export class CreateChatCommand extends Command {
-  public readonly title: string;
-  public readonly description: string;
+  public readonly title?: string;
+  public readonly description?: string;
   public readonly memberUserIds: string[];
   public readonly accessKey?: string;
 

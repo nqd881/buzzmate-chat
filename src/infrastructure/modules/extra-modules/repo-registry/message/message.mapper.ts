@@ -1,30 +1,31 @@
-import {ChatId} from "@domain/models/chat/chat";
-import {ChatMemberId} from "@domain/models/chat-member/chat-member";
-import {DocumentId} from "@domain/models/document/document";
-import {Message, MessageId} from "@domain/models/message/message";
-import {MessageContent} from "@domain/models/message/message-content";
-import {MessageContentAlbum} from "@domain/models/message/message-content/album.content";
-import {MessageContentDocument} from "@domain/models/message/message-content/document.content";
-import {MessageContentPhoto} from "@domain/models/message/message-content/photo.content";
-import {MessageContentText} from "@domain/models/message/message-content/text.content";
-import {MessageContentVideo} from "@domain/models/message/message-content/video.content";
-import {MessageForwardInfo} from "@domain/models/message/message-forward-info";
-import {MessageReaction} from "@domain/models/message/message-reaction";
-import {PhotoId} from "@domain/models/photo/photo";
-import {VideoId} from "@domain/models/video/video";
-import {IDomainPersistenceMapper} from "@libs/ddd";
-import {Injectable} from "@nestjs/common";
+import { ChatId } from "@domain/models/chat/chat";
+import { ChatMemberId } from "@domain/models/chat-member/chat-member";
+import { DocumentId } from "@domain/models/document/document";
+import { Message, MessageId } from "@domain/models/message/message";
+import { MessageContent } from "@domain/models/message/message-content";
+import { MessageContentAlbum } from "@domain/models/message/message-content/album.content";
+import { MessageContentDocument } from "@domain/models/message/message-content/document.content";
+import { MessageContentPhoto } from "@domain/models/message/message-content/photo.content";
+import { MessageContentText } from "@domain/models/message/message-content/text.content";
+import { MessageContentVideo } from "@domain/models/message/message-content/video.content";
+import { MessageForwardInfo } from "@domain/models/message/message-forward-info";
+import { MessageReaction } from "@domain/models/message/message-reaction";
+import { PhotoId } from "@domain/models/photo/photo";
+import { VideoId } from "@domain/models/video/video";
+import { IDomainPersistenceMapper } from "@libs/ddd";
+import { Injectable } from "@nestjs/common";
 import {
   DbMessage,
   DbMessageContent,
   DbMessageContentAlbum,
+  DbMessageContentDocument,
   DbMessageContentPhoto,
   DbMessageContentText,
   DbMessageContentVideo,
   DbMessageForwardInfo,
   DbMessageReaction,
 } from "./message.schema";
-import {UserId} from "@domain/models/user/user";
+import { UserId } from "@domain/models/user/user";
 
 @Injectable()
 export class MessageMapper
@@ -35,7 +36,7 @@ export class MessageMapper
   ): DbMessageForwardInfo {
     if (!forwardInfo) return null;
 
-    const {fromChatId, fromMessageId, senderUserId} = forwardInfo;
+    const { fromChatId, fromMessageId, senderUserId } = forwardInfo;
 
     return {
       fromChatId: fromChatId.value,
@@ -49,7 +50,7 @@ export class MessageMapper
   ): MessageForwardInfo {
     if (!forwardInfo) return null;
 
-    const {fromChatId, fromMessageId, senderUserId} = forwardInfo;
+    const { fromChatId, fromMessageId, senderUserId } = forwardInfo;
 
     return new MessageForwardInfo({
       fromChatId: new ChatId(fromChatId),
@@ -66,7 +67,7 @@ export class MessageMapper
 
     switch (content.constructor.name) {
       case MessageContentText.name: {
-        const {text, webPage} = content as MessageContentText;
+        const { text, webPage } = content as MessageContentText;
 
         return {
           contentType,
@@ -74,7 +75,7 @@ export class MessageMapper
         } as DbMessageContentText;
       }
       case MessageContentPhoto.name: {
-        const {caption, photoId} = content as MessageContentPhoto;
+        const { caption, photoId } = content as MessageContentPhoto;
 
         return {
           contentType,
@@ -83,7 +84,7 @@ export class MessageMapper
         } as DbMessageContent;
       }
       case MessageContentVideo.name: {
-        const {caption, videoId} = content as MessageContentVideo;
+        const { caption, videoId } = content as MessageContentVideo;
 
         return {
           contentType,
@@ -92,7 +93,7 @@ export class MessageMapper
         } as DbMessageContent;
       }
       case MessageContentDocument.name: {
-        const {caption, documentId} = content as MessageContentDocument;
+        const { caption, documentId } = content as MessageContentDocument;
 
         return {
           contentType,
@@ -101,7 +102,7 @@ export class MessageMapper
         } as DbMessageContent;
       }
       case MessageContentAlbum.name: {
-        const {caption, photoIds, videoIds, documentIds} =
+        const { caption, photoIds, videoIds, documentIds } =
           content as MessageContentAlbum;
 
         return {
@@ -120,7 +121,7 @@ export class MessageMapper
 
     switch (content.contentType) {
       case MessageContentText.name: {
-        const {text} = content as DbMessageContentText;
+        const { text } = content as DbMessageContentText;
 
         return new MessageContentText({
           text,
@@ -129,7 +130,7 @@ export class MessageMapper
       }
 
       case MessageContentPhoto.name: {
-        const {caption, photoId} = content as DbMessageContentPhoto;
+        const { caption, photoId } = content as DbMessageContentPhoto;
 
         return new MessageContentPhoto({
           caption,
@@ -137,8 +138,8 @@ export class MessageMapper
         });
       }
 
-      case MessageContentPhoto.name: {
-        const {caption, videoId} = content as DbMessageContentVideo;
+      case MessageContentVideo.name: {
+        const { caption, videoId } = content as DbMessageContentVideo;
 
         return new MessageContentVideo({
           caption,
@@ -146,8 +147,17 @@ export class MessageMapper
         });
       }
 
-      case MessageContentPhoto.name: {
-        const {caption, photoIds, videoIds, documentIds} =
+      case MessageContentDocument.name: {
+        const { caption, documentId } = content as DbMessageContentDocument;
+
+        return new MessageContentDocument({
+          caption,
+          documentId: new DocumentId(documentId),
+        });
+      }
+
+      case MessageContentAlbum.name: {
+        const { caption, photoIds, videoIds, documentIds } =
           content as DbMessageContentAlbum;
 
         return new MessageContentAlbum({
@@ -165,7 +175,7 @@ export class MessageMapper
   private reactionToPersistence(
     messageReaction: MessageReaction
   ): DbMessageReaction {
-    const {chatMemberId, reactionValue} = messageReaction;
+    const { chatMemberId, reactionValue } = messageReaction;
 
     return {
       chatMemberId: chatMemberId.value,
@@ -176,7 +186,7 @@ export class MessageMapper
   private reactionToDomain(
     messageReaction: DbMessageReaction
   ): MessageReaction {
-    const {chatMemberId, reactionValue} = messageReaction;
+    const { chatMemberId, reactionValue } = messageReaction;
 
     return new MessageReaction({
       chatMemberId: new ChatMemberId(chatMemberId),

@@ -1,5 +1,7 @@
-import { JsonTransformPipe } from "@infrastructure/ws-pipes/json-transform";
-import { Inject, UseGuards, ValidationPipe } from "@nestjs/common";
+import { SendMessageCommand } from "@application/commands/chat/send-message/send-message.command";
+import { DomainEventBusService } from "@infrastructure/modules/extra-modules/domain-event-bus/domain-event-bus.service";
+import { WsAuthGuard } from "@infrastructure/ws-guards/ws-auth-guard";
+import { UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   ConnectedSocket,
@@ -10,22 +12,11 @@ import {
 } from "@nestjs/websockets";
 import { IsOptional, IsString } from "class-validator";
 import { Server, Socket } from "socket.io";
-import { SendMessageRequestDto } from "../controllers/dto/send-message.dto";
-import { SendMessageCommand } from "@application/commands/chat/send-message/send-message.command";
-import { FindMessagesQuery } from "@application/queries/find-messages/find-messages.query";
-import { WsAuthGuard } from "@infrastructure/ws-guards/ws-auth-guard";
-import { DOMAIN_EVENT_BUS } from "@application/di-tokens/domain-event-bus";
-import { DomainEventBusService } from "@infrastructure/modules/extra-modules/domain-event-bus/domain-event-bus.service";
-import { MessageCreatedDomainEvent } from "@domain/models/message/events/message-created";
 
 export class SendMessageData {
   @IsString()
   @IsOptional()
   prepareMessageId: string;
-
-  // @IsString()
-  // @IsOptional()
-  // matchId: string;
 
   @IsString()
   chatId: string;
@@ -43,11 +34,7 @@ export class SendMessageGateway {
   @WebSocketServer()
   server: Server;
 
-  constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
-    private domainEventBusService: DomainEventBusService
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @SubscribeMessage("send_message")
   @UseGuards(WsAuthGuard)

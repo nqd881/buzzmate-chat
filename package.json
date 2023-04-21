@@ -6,7 +6,8 @@
   "scripts": {
     "test-index": "npx ts-node -r tsconfig-paths/register src/index.ts",
     "start:dev": "nest start --watch",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "test": ""
   },
   "author": "",
   "license": "ISC",

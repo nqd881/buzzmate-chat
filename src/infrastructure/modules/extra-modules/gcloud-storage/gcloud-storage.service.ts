@@ -1,7 +1,7 @@
-import {Storage} from "@google-cloud/storage";
-import {EnvNames} from "@infrastructure/env/env.name";
-import {Injectable} from "@nestjs/common";
-import {ConfigService} from "@nestjs/config";
+import { Storage } from "@google-cloud/storage";
+import { EnvNames } from "@infrastructure/env/env.name";
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class GCloudStorageService {

@@ -1,7 +1,7 @@
-import {DocumentId} from "@domain/models/document/document";
-import {PhotoId} from "@domain/models/photo/photo";
-import {VideoId} from "@domain/models/video/video";
-import {MessageContent, MessageContentProps} from "../message-content";
+import { DocumentId } from "@domain/models/document/document";
+import { PhotoId } from "@domain/models/photo/photo";
+import { VideoId } from "@domain/models/video/video";
+import { MessageContent, MessageContentProps } from "../message-content";
 
 export interface IMessageContentAlbumProps {
   caption: string;
@@ -31,5 +31,11 @@ export class MessageContentAlbum extends MessageContent<IMessageContentAlbumProp
 
   get documentIds() {
     return this.props.documentIds;
+  }
+
+  static isContentAlbum(
+    content: MessageContent<any>
+  ): content is MessageContentAlbum {
+    return content instanceof MessageContentAlbum;
   }
 }

@@ -1,8 +1,9 @@
+import { FindUsersQuery } from "@application/queries/find-users/find-users.query";
 import { AuthGuard } from "@infrastructure/guards/auth.guard";
 import { Controller, Get, Query, Req, UseGuards } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
+import { isString } from "lodash";
 import { GetUsersQuery } from "./dto/get-users.query";
-import { FindUsersQuery } from "@application/queries/find-users/find-users.query";
 
 @Controller("users")
 export class GetUsersController {
@@ -15,9 +16,9 @@ export class GetUsersController {
 
     const query = new FindUsersQuery({
       limit,
-      byIds: id,
-      byEmails: email,
-      byNames: name,
+      byIds: isString(id) ? [id] : id,
+      byEmails: isString(email) ? [email] : email,
+      byNames: isString(name) ? [name] : name,
     });
 
     try {

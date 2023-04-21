@@ -5,13 +5,15 @@ export class FindChatsQuery extends Query {
   public readonly limit?: number;
   public readonly fave?: boolean;
   public readonly archived?: boolean;
+  public readonly returnPersonal?: boolean;
 
   constructor(props: QueryProps<FindChatsQuery>) {
     super(props);
 
-    this.byIds = props.byIds;
-    this.limit = props.limit;
-    this.fave = props.fave;
-    this.archived = props.archived;
+    this.byIds = props?.byIds;
+    this.limit = props?.limit;
+    this.fave = props?.fave;
+    this.archived = props?.archived;
+    this.returnPersonal = props?.returnPersonal;
   }
 }

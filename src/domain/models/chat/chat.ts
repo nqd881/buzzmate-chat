@@ -65,7 +65,19 @@ export class Chat extends AggregateRoot<ChatId, IChatProps> {
   validate() {}
 
   static create(props: IChatProps) {
-    const newChat = new Chat(props, 0);
+    const newChatId = new ChatId();
+
+    const newChat = new Chat(
+      {
+        ...props,
+        title:
+          props.type === ChatTypes.GROUP && props?.title
+            ? props.title
+            : `Chat_${newChatId.value}`,
+      },
+      0,
+      newChatId
+    );
 
     newChat.addEvent(
       new ChatCreatedDomainEvent({

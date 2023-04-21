@@ -1,4 +1,4 @@
-import {EntityId, EntityIdType} from "./entity-id";
+import { EntityId, EntityIdType } from "./entity-id";
 
 export abstract class Entity<T extends EntityId, Props = unknown> {
   protected _id: T;
@@ -50,5 +50,9 @@ export abstract class Entity<T extends EntityId, Props = unknown> {
     }
 
     return this.id.equals(other.id);
+  }
+
+  getProps() {
+    return this.props;
   }
 }

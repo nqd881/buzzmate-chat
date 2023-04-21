@@ -1,8 +1,9 @@
 export class UserResponseDto {
   id: string;
-  email: string;
+  identity: string;
+  emailAddress: string;
   name: string;
-  rootUserId: string;
+  type: string;
 }
 
 export class ChatMemberResponseDto {
@@ -38,23 +39,30 @@ export class PhotoSizeResponseDto {
 
 export class PhotoResponseDto {
   id: string;
+  chatId: string;
   file: FileResponseDto;
-  // original: PhotoSizeResponseDto;
-  // variants: Map<string, PhotoSizeResponseDto>;
+  //
+  url: string;
 }
 
 export class VideoResponseDto {
   id: string;
+  chatId: string;
   width: number;
   height: number;
   duration: number;
   thumbnail: any;
   file: FileResponseDto;
+  //
+  url: string;
 }
 
 export class DocumentResponseDto {
   id: string;
+  chatId: string;
   file: FileResponseDto;
+  //
+  url: string;
 }
 
 export class MessageResponseDto {
@@ -65,9 +73,13 @@ export class MessageResponseDto {
   sentByMember: ChatMemberResponseDto;
   content: {
     text: string;
-    photoIds: string[];
-    videoIds: string[];
-    documentIds: string[];
+    // photoIds: string[];
+    // videoIds: string[];
+    // documentIds: string[];
+
+    photos: PhotoResponseDto[];
+    videos: VideoResponseDto[];
+    documents: DocumentResponseDto[];
   };
   date: number;
   editDate: number;
@@ -89,8 +101,8 @@ export class ChatResponseDto {
   isGroupChat: boolean;
   isPrivateChat: boolean;
   isSelfChat: boolean;
-  isMyFave: boolean;
-  isArchived: boolean;
   lastMessage: MessageResponseDto;
   memberCount: number;
+  isFave?: boolean;
+  isArchived?: boolean;
 }

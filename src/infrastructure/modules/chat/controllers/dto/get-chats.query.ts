@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class GetChatsQuery {
   @IsNumber()
@@ -10,4 +10,13 @@ export class GetChatsQuery {
   @IsString({ each: true })
   @IsOptional()
   ids: string[];
+
+  @IsString({ each: true })
+  @IsOptional()
+  excludeIds: string[];
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => value === "true")
+  personal: boolean;
 }

@@ -1,10 +1,10 @@
-import {Repositories} from "@application/di-tokens/repositories";
-import {ChatMemberCreatedDomainEvent} from "@domain/models/chat-member/events/chat-member-created";
-import {UserChat} from "@domain/models/user/user-chat";
-import {IUserRepo} from "@domain/models/user/user-repo.interface";
-import {DomainEventName} from "@domain/utils/domain-event-name";
-import {Inject} from "@nestjs/common";
-import {OnEvent} from "@nestjs/event-emitter";
+import { Repositories } from "@application/di-tokens/repositories";
+import { ChatMemberCreatedDomainEvent } from "@domain/models/chat-member/events/chat-member-created";
+import { UserChat } from "@domain/models/user/user-chat";
+import { IUserRepo } from "@domain/models/user/user-repo.interface";
+import { DomainEventName } from "@domain/utils/domain-event-name";
+import { Inject } from "@nestjs/common";
+import { OnEvent } from "@nestjs/event-emitter";
 
 export class UpdateUserChats {
   constructor(
@@ -16,7 +16,7 @@ export class UpdateUserChats {
     promisify: true,
   })
   async update(event: ChatMemberCreatedDomainEvent) {
-    const {userId, chatId} = event;
+    const { userId, chatId } = event;
 
     const user = await this.userRepo.findOneById(userId);
 
@@ -30,6 +30,6 @@ export class UpdateUserChats {
 
     user.addChat(newUserChat);
 
-    this.userRepo.save(user);
+    await this.userRepo.save(user);
   }
 }

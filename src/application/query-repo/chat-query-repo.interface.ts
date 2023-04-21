@@ -14,6 +14,7 @@ export type GetChatsOptions = {
   limit?: number;
   fave?: boolean;
   archived?: boolean;
+  returnPersonal?: boolean;
 };
 
 export type GetMessagesOptions = {

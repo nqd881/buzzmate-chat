@@ -51,6 +51,10 @@ export abstract class MongoRepository<
     const docs = newEntities.map((entity) => this.mapper.toPersistence(entity));
 
     await this.dbModel.insertMany(docs);
+
+    entities.forEach((entity) => {
+      entity.publishEvents(this.domainEventBus);
+    });
   }
 
   async findOneById(id: IdTypeOfEntity<AR>) {

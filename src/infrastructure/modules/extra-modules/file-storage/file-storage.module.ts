@@ -1,7 +1,7 @@
-import {Ports} from "@application/ports/constants";
-import {Module} from "@nestjs/common";
-import {GCloudStorageModule} from "../gcloud-storage/gcloud-storage.module";
-import {FileStorageService} from "./file-storage.service";
+import { Ports } from "@application/ports/constants";
+import { Module } from "@nestjs/common";
+import { GCloudStorageModule } from "../gcloud-storage/gcloud-storage.module";
+import { FileStorageService } from "./file-storage.service";
 
 @Module({
   imports: [GCloudStorageModule],

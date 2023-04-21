@@ -11,7 +11,7 @@ export abstract class EntityId {
 
   protected _value: RawEntityId;
 
-  constructor(value: RawEntityId) {
+  constructor(value?: RawEntityId) {
     this.setValue(value ?? EntityId.nextValue());
   }
 

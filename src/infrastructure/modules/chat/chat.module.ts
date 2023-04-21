@@ -1,7 +1,6 @@
 import { BanMembersService } from "@application/commands/chat/ban-members/ban-members.service";
 import { CreateChatService } from "@application/commands/chat/create-chat/create-chat.service";
 import { EditChatInfoService } from "@application/commands/chat/edit-chat-info/edit-chat-info.service";
-import { ForwardMessagesService } from "@application/commands/chat/foward-messages/forward-messages.service";
 import { HideMessagesService } from "@application/commands/chat/hide-messages/hide-messages.service";
 import { InviteToChatService } from "@application/commands/chat/invite-to-chat/invite-to-chat.service";
 import { LeaveChatService } from "@application/commands/chat/leave-chat/leave-chat.service";
@@ -51,6 +50,8 @@ import { FindVideosService } from "@application/queries/find-videos/find-videos.
 import { FindDocumentsService } from "@application/queries/find-documents/find-documents.service";
 import { GetChatMembersController } from "./controllers/get-members.controller";
 import { FindMembersService } from "@application/queries/find-members/find-members.service";
+import { SOCKET_DOMAIN_EVENT_LISTENERS } from "./socket-gateways/domain-event-listener";
+import { ForwardMessageService } from "@application/commands/chat/foward-message/forward-message.service";
 
 const commandHandlers = [
   CreateChatService,
@@ -60,7 +61,7 @@ const commandHandlers = [
 
   SendMessageService,
   PinMessagesService,
-  ForwardMessagesService,
+  ForwardMessageService,
   SendReactionService,
   HideMessagesService,
 
@@ -113,7 +114,11 @@ const httpControllers = [
   GetChatMembersController,
 ];
 
-const socketGateways = [AppGateway, SendMessageGateway];
+const socketGateways = [
+  AppGateway,
+  SendMessageGateway,
+  ...SOCKET_DOMAIN_EVENT_LISTENERS,
+];
 
 @Module({
   imports: [

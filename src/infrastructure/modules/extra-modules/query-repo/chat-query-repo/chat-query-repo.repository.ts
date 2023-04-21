@@ -11,6 +11,7 @@ import {
 import {
   ChatMemberResponseDto,
   ChatResponseDto,
+  DocumentResponseDto,
   MessageResponseDto,
   PhotoResponseDto,
   UserResponseDto,
@@ -44,6 +45,105 @@ import {
 } from "../common";
 import AggOps from "../common/aggregation-pipeline.operators";
 import { MaybePromise } from "@libs/utilities/types";
+
+const FileGeneralPipelines = () => [
+  Project({
+    Id: false,
+    Include: {
+      name: 1,
+      size: 1,
+      date: 1,
+      mimetype: 1,
+    },
+    Fields: {
+      id: "$_id",
+    },
+  }),
+];
+
+const PhotoGeneralPipelines = () => [
+  Lookup(
+    "dbfiles",
+    {
+      fileId: "$original.fileId",
+    },
+    [Match(Expr(AggOps.Eq("$_id", "$$fileId"))), ...FileGeneralPipelines()],
+    "__file"
+  ),
+  Unwind("$__file"),
+  Project({
+    Id: false,
+    Fields: {
+      id: "$_id",
+      chatId: "$chatId",
+      width: "$original.width",
+      height: "$original.height",
+      file: "$__file",
+      url: {
+        $concat: [
+          "http://buzzmate.com/api/chat-svc/chats/",
+          "$chatId",
+          "/photos/",
+          "$_id",
+          "/original",
+        ],
+      },
+    },
+  }),
+];
+
+const VideoGeneralPipelines = () => [
+  Lookup(
+    "dbfiles",
+    {
+      fileId: "$fileId",
+    },
+    [Match(Expr(AggOps.Eq("$_id", "$$fileId"))), ...FileGeneralPipelines()],
+    "__file"
+  ),
+  Unwind("$__file"),
+  Project({
+    Id: false,
+    Include: {
+      chatId: 1,
+      width: 1,
+      height: 1,
+      duration: 1,
+    },
+    Fields: {
+      id: "$_id",
+      file: "$__file",
+      url: {
+        $concat: [
+          "http://buzzmate.com/api/chat-svc/chats/",
+          "$chatId",
+          "/videos/",
+          "$_id",
+        ],
+      },
+    },
+  }),
+];
+
+const DocumentGeneralPipelines = () => [
+  Lookup(
+    "dbfiles",
+    {
+      fileId: "$fileId",
+    },
+    [Match(Expr(AggOps.Eq("$_id", "$$fileId"))), ...FileGeneralPipelines()],
+    "__file"
+  ),
+  Unwind("$__file"),
+  Project({
+    Id: false,
+    Fields: {
+      id: "$_id",
+      chatId: "$chatId",
+      file: "$__file",
+    },
+  }),
+];
 
 const ChatMemberGeneralPipelines = () => [
   Set({
@@ -221,6 +321,36 @@ const MessageGeneralPipelines = () => [
     "sentByMember"
   ),
   Unwind("$sentByMember", true),
+  Set({
+    sentByMember: AggOps.IfNull("$sentByMember", {}),
+  }),
+  Lookup(
+    "dbphotos",
+    {
+      photoIds: "$content.photoIds",
+    },
+    [Match(Expr(AggOps.In("$_id", "$$photoIds"))), ...PhotoGeneralPipelines()],
+    "content.photos"
+  ),
+  Lookup(
+    "dbvideos",
+    {
+      videoIds: "$content.videoIds",
+    },
+    [Match(Expr(AggOps.In("$_id", "$$videoIds"))), ...VideoGeneralPipelines()],
+    "content.videos"
+  ),
+  Lookup(
+    "dbdocuments",
+    {
+      documentIds: "$content.documentIds",
+    },
+    [
+      Match(Expr(AggOps.In("$_id", "$$documentIds"))),
+      ...DocumentGeneralPipelines(),
+    ],
+    "content.documents"
+  ),
   Project({
     Id: false,
     Include: {
@@ -234,15 +364,15 @@ const MessageGeneralPipelines = () => [
       seemByUserIds: 1,
       views: 1,
       reactions: 1,
-      content: {
-        text: 1,
-        hasMedias: 1,
-        photoIds: 1,
-        videoIds: 1,
-        documentIds: 1,
-      },
       sentByMember: 1,
       // sentByMyself: 1,
+    },
+    Fields: {
+      "content.text": "$content.text",
+      "content.hasMedia": "$content.hasMedia",
+      "content.photos": "$content.photos",
+      "content.videos": "$content.videos",
+      "content.documents": "$content.documents",
     },
   }),
 ];
@@ -263,11 +393,11 @@ const ChatGeneralPipelines = () => [
       Match(Expr(AggOps.Eq("$_id", "$$lastMessageId"))),
       ...MessageGeneralPipelines(),
     ],
-    "lastMessage"
+    "__lastMessage"
   ),
-  Unwind("$lastMessage", true),
+  Unwind("$__lastMessage", true),
   Set({
-    lastMessage: AggOps.IfNull("$lastMessage", null),
+    lastMessage: AggOps.IfNull("$__lastMessage", null),
   }),
   Project({
     Id: false,
@@ -284,7 +414,6 @@ const ChatGeneralPipelines = () => [
     },
   }),
 ];
-
 @Injectable()
 export class ChatQueryRepo implements IChatQueryRepo {
   constructor(@InjectConnection() private conn: Connection) {}
@@ -310,9 +439,9 @@ export class ChatQueryRepo implements IChatQueryRepo {
           Project({
             Fields: {
               id: "$chatId",
-              isMyFave: "$isFave",
             },
             Include: {
+              isFave: 1,
               isArchived: 1,
             },
           }),
@@ -338,9 +467,31 @@ export class ChatQueryRepo implements IChatQueryRepo {
             ],
             "__chatDetail"
           ),
-          Unwind("$__chatDetail", true),
+          Unwind("$__chatDetail"),
           ReplaceRoot(AggOps.MergeObjects([ROOT, "$__chatDetail"])),
           Unset("__chatDetail"),
+          Project({
+            Include: {
+              id: 1,
+              title: 1,
+              description: 1,
+              isGroupChat: 1,
+              isPrivateChat: 1,
+              isSelfChat: 1,
+              lastMessage: 1,
+              memberCount: 1,
+              isFave: 1,
+              isArchived: 1,
+            },
+          }),
+          !options?.returnPersonal
+            ? Project({
+                Exclude: {
+                  isFave: 0,
+                  isArchived: 0,
+                },
+              })
+            : null,
           Limit(options?.limit ?? 100),
         ].filter((stage) => !isNil(stage))
       )
@@ -448,8 +599,11 @@ export class ChatQueryRepo implements IChatQueryRepo {
             ],
             "__messages"
           ),
-          Unwind("$__messages", true),
-          ReplaceRoot("$__messages"),
+          // Unwind("$__messages", true),
+          // // Set({
+          // //   __messages: AggOps.IfNull("$__messages", null),
+          // // }),
+          // ReplaceRoot("$__messages"),
         ];
       }
 
@@ -470,8 +624,11 @@ export class ChatQueryRepo implements IChatQueryRepo {
             ],
             "__messages"
           ),
-          Unwind("$__messages", true),
-          ReplaceRoot("$__messages"),
+          // Unwind("$__messages", true),
+          // // Set({
+          // //   __messages: AggOps.IfNull("$__messages", null),
+          // // }),
+          // ReplaceRoot("$__messages"),
         ];
       }
 
@@ -492,8 +649,11 @@ export class ChatQueryRepo implements IChatQueryRepo {
             ],
             "__messages"
           ),
-          Unwind("$__messages", true),
-          ReplaceRoot("$__messages"),
+          // Unwind("$__messages", true),
+          // // Set({
+          // //   __messages: AggOps.IfNull("$__messages", null),
+          // // }),
+          // ReplaceRoot("$__messages"),
         ];
       }
     };
@@ -576,38 +736,7 @@ export class ChatQueryRepo implements IChatQueryRepo {
               ])
             )
           ),
-          Lookup(
-            "dbfiles",
-            {
-              fileId: "$original.fileId",
-            },
-            [
-              Match(Expr(AggOps.Eq("$_id", "$$fileId"))),
-              Project({
-                Id: false,
-                Include: {
-                  name: 1,
-                  size: 1,
-                  date: 1,
-                  mimetype: 1,
-                },
-                Fields: {
-                  id: "$_id",
-                },
-              }),
-            ],
-            "__file"
-          ),
-          Unwind("$__file"),
-          Project({
-            Id: false,
-            Fields: {
-              id: "$_id",
-              width: "$original.width",
-              height: "$original.height",
-              file: "$__file",
-            },
-          }),
+          ...PhotoGeneralPipelines(),
         ].filter((stage) => !isNil(stage))
       )
       .toArray();
@@ -629,41 +758,7 @@ export class ChatQueryRepo implements IChatQueryRepo {
               ])
             )
           ),
-          Lookup(
-            "dbfiles",
-            {
-              fileId: "$fileId",
-            },
-            [
-              Match(Expr(AggOps.Eq("$_id", "$$fileId"))),
-              Project({
-                Id: false,
-                Include: {
-                  name: 1,
-                  size: 1,
-                  date: 1,
-                  mimetype: 1,
-                },
-                Fields: {
-                  id: "$_id",
-                },
-              }),
-            ],
-            "__file"
-          ),
-          Unwind("$__file"),
-          Project({
-            Id: false,
-            Include: {
-              width: 1,
-              height: 1,
-              duration: 1,
-            },
-            Fields: {
-              id: "$_id",
-              file: "$__file",
-            },
-          }),
+          ...VideoGeneralPipelines(),
         ].filter((stage) => !isNil(stage))
       )
       .toArray();
@@ -674,7 +769,7 @@ export class ChatQueryRepo implements IChatQueryRepo {
   async getDocuments(chatId: string, options?: GetDocumentsOptions) {
     const { byIds } = options;
 
-    const videos = await this.collection("dbdocuments")
+    const documents = await this.collection("dbdocuments")
       .aggregate(
         [
           Match(
@@ -685,63 +780,20 @@ export class ChatQueryRepo implements IChatQueryRepo {
               ])
             )
           ),
-          Lookup(
-            "dbfiles",
-            {
-              fileId: "$fileId",
-            },
-            [
-              Match(Expr(AggOps.Eq("$_id", "$$fileId"))),
-              Project({
-                Id: false,
-                Include: {
-                  name: 1,
-                  size: 1,
-                  date: 1,
-                  mimetype: 1,
-                },
-                Fields: {
-                  id: "$_id",
-                },
-              }),
-            ],
-            "__file"
-          ),
-          Unwind("$__file"),
-          Project({
-            Id: false,
-            Fields: {
-              id: "$_id",
-              file: "$__file",
-            },
-          }),
+          ...DocumentGeneralPipelines(),
         ].filter((stage) => !isNil(stage))
       )
       .toArray();
 
-    return videos as VideoResponseDto[];
+    return documents as DocumentResponseDto[];
   }
 
   async getUsers(options?: GetUsersOptions) {
     const { limit, byIds, byEmails, byNames } = options || {};
 
-    console.log(
-      AggOps.Or([
-        ...(byEmails
-          ? byEmails.map((email) =>
-              AggOps.RegexMatch("$emailAddress", `(?i).*${email}.*`)
-            )
-          : []),
-      ])
-    );
-
     const users = await this.collection("dbusers")
       .aggregate(
         [
-          // byIds ? Match(AggOps.In("$_id", byIds)) : null,
-          // byEmails ? Match(AggOps.In("$emailAddress", byEmails)) : null,
-          // byNames ? Match(AggOps.In("$name", byEmails)) : null,
-
           Match(
             Expr(
               AggOps.Or([
@@ -750,9 +802,39 @@ export class ChatQueryRepo implements IChatQueryRepo {
                       AggOps.RegexMatch("$emailAddress", `(?i).*${email}.*`)
                     )
                   : []),
+                ...(byNames
+                  ? byNames.map((name) =>
+                      AggOps.RegexMatch("$name", `(?i).*${name}.*`)
+                    )
+                  : []),
+                ...(byIds
+                  ? byIds.map((id) =>
+                      AggOps.RegexMatch("$_id", `(?i).*${id}.*`)
+                    )
+                  : []),
               ])
             )
           ),
+          Project({
+            Id: false,
+            Include: {
+              identity: 1,
+              name: 1,
+              emailAddress: 1,
+              type: 1,
+            },
+            Fields: {
+              id: "$_id",
+              url: {
+                $concat: [
+                  "http://buzzmate.com/api/chat-svc/chats/",
+                  "$chatId",
+                  "/documents/",
+                  "$_id",
+                ],
+              },
+            },
+          }),
         ].filter((stage) => !isNil(stage))
       )
       .toArray();

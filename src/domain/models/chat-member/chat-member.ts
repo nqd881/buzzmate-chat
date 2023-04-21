@@ -1,12 +1,12 @@
-import {AggregateRoot, EntityId} from "@libs/ddd";
-import {ChatId} from "../chat/chat";
-import {UserId} from "../user/user";
-import {ChatMemberStatus} from "./chat-member-status";
-import {ChatMemberStatusActive} from "./chat-member-status/chat-member-status-active";
-import {ChatMemberStatusBanned} from "./chat-member-status/chat-member-status-banned";
-import {ChatMemberStatusLeft} from "./chat-member-status/chat-member-status-left";
-import {ChatMemberCreatedDomainEvent} from "./events/chat-member-created";
-import {ChatMemberStatusChangedDomainEvent} from "./events/chat-member-status-changed";
+import { AggregateRoot, EntityId } from "@libs/ddd";
+import { ChatId } from "../chat/chat";
+import { UserId } from "../user/user";
+import { ChatMemberStatus } from "./chat-member-status";
+import { ChatMemberStatusActive } from "./chat-member-status/chat-member-status-active";
+import { ChatMemberStatusBanned } from "./chat-member-status/chat-member-status-banned";
+import { ChatMemberStatusLeft } from "./chat-member-status/chat-member-status-left";
+import { ChatMemberCreatedDomainEvent } from "./events/chat-member-created";
+import { ChatMemberStatusChangedDomainEvent } from "./events/chat-member-status-changed";
 
 export interface IChatMemberProps {
   chatId: ChatId;

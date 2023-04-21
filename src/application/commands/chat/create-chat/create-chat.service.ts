@@ -22,6 +22,7 @@ import {
 import { Inject } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateChatCommand } from "./create-chat.command";
+import _ from "lodash";
 
 @CommandHandler(CreateChatCommand)
 export class CreateChatService implements ICommandHandler {
@@ -36,12 +37,13 @@ export class CreateChatService implements ICommandHandler {
 
   async execute(command: CreateChatCommand) {
     const userId = new UserId(command.metadata.userId);
-    const memberUserIds = command.memberUserIds.map(
-      (memberUserId) => new UserId(memberUserId)
-    );
-    const { title, description, accessKey } = command;
 
-    const fullMemberUserIds = [...new Set([...memberUserIds, userId])];
+    const memberUserIds = _.uniq([
+      ...command.memberUserIds,
+      command.metadata.userId,
+    ]).map((memberUserId) => new UserId(memberUserId));
+
+    const { title, description, accessKey } = command;
 
     const owner = await this.chatOwnerRepo.findOneByUserId(userId);
 
@@ -49,7 +51,7 @@ export class CreateChatService implements ICommandHandler {
 
     const memberUsers = (
       await Promise.all(
-        fullMemberUserIds.map((memberUserId) =>
+        memberUserIds.map((memberUserId) =>
           this.userRepo.findOneById(memberUserId)
         )
       )

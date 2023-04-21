@@ -1,5 +1,5 @@
-import {WebPage} from "@domain/models/webpage";
-import {MessageContent, MessageContentProps} from "../message-content";
+import { WebPage } from "@domain/models/webpage";
+import { MessageContent, MessageContentProps } from "../message-content";
 
 export interface IMessageContentTextProps {
   text: string;
@@ -19,5 +19,11 @@ export class MessageContentText extends MessageContent<IMessageContentTextProps>
 
   get webPage() {
     return this.props.webPage;
+  }
+
+  static isContentText(
+    content: MessageContent<any>
+  ): content is MessageContentText {
+    return content instanceof MessageContentText;
   }
 }
