@@ -24,7 +24,7 @@ import { MemberGeneralPipelines } from "../member-query-repo/member-query-repo.r
 import { PhotoGeneralPipelines } from "../photo-query-repo/photo-query-repo.repository";
 import { VideoGeneralPipelines } from "../video-query-repo/video-query-repo.repository";
 import { DocumentGeneralPipelines } from "../document-query-repo/document-query-repo.repository";
-import { MessageQueryModel } from "@application/query-repo/response-dto";
+import { MessageQueryModel } from "@application/query-repo/query-model";
 
 export const MessageGeneralPipelines = [
   Set({

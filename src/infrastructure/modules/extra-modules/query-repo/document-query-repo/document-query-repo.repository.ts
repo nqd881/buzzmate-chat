@@ -2,7 +2,7 @@ import {
   IDocumentQueryRepo,
   QueryDocumentsOptions,
 } from "@application/query-repo/document-query-repo.interface";
-import { DocumentQueryModel } from "@application/query-repo/response-dto";
+import { DocumentQueryModel } from "@application/query-repo/query-model";
 import { isNil } from "lodash";
 import { AggOps, Expr, Lookup, Match, Project, Unwind } from "../common";
 import { FileGeneralPipelines } from "../file-query-repo/file-query-repo.repository";

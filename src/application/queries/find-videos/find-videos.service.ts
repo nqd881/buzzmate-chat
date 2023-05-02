@@ -3,7 +3,7 @@ import { FindVideosQuery } from "./find-videos.query";
 import { Inject } from "@nestjs/common";
 import { QueryRepositories } from "@application/query-repo/constant";
 import { IChatQueryRepo } from "@application/query-repo/chat-query-repo.interface";
-import { VideoQueryModel } from "@application/query-repo/response-dto";
+import { VideoQueryModel } from "@application/query-repo/query-model";
 import { IVideoQueryRepo } from "@application/query-repo/video-query-repo.interface";
 
 @QueryHandler(FindVideosQuery)

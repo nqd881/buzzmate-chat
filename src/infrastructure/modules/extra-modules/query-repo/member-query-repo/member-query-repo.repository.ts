@@ -7,7 +7,7 @@ import {
 import { AggOps, Expr, Lookup, Match, Project, Set } from "../common";
 import { MemberStatusLeft } from "@domain/models/member/member-status/member-status-left";
 import { MemberStatusBanned } from "@domain/models/member/member-status/member-status-banned";
-import { MemberQueryModel } from "@application/query-repo/response-dto";
+import { MemberQueryModel } from "@application/query-repo/query-model";
 import { isNil } from "lodash";
 
 export const MemberGeneralPipelines = [

@@ -2,7 +2,7 @@ import {
   QueryChatsOptions,
   IChatQueryRepo,
 } from "@application/query-repo/chat-query-repo.interface";
-import { ChatQueryModel } from "@application/query-repo/response-dto";
+import { ChatQueryModel } from "@application/query-repo/query-model";
 import { ChatTypes } from "@domain/models/chat/chat";
 import { Injectable } from "@nestjs/common";
 import { isNil } from "lodash";

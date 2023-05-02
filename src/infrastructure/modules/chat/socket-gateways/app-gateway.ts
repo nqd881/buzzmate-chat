@@ -1,5 +1,5 @@
 import { FindChatsQuery } from "@application/queries/find-chats/find-chats.query";
-import { ChatQueryModel } from "@application/query-repo/response-dto";
+import { ChatQueryModel } from "@application/query-repo/query-model";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { OnGatewayConnection, WebSocketGateway } from "@nestjs/websockets";
 import { Socket } from "socket.io";

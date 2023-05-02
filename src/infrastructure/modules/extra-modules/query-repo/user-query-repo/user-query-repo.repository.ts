@@ -4,7 +4,7 @@ import {
   IUserQueryRepo,
   QueryUsersOptions,
 } from "@application/query-repo/user-query-repo.interface";
-import { UserQueryModel } from "@application/query-repo/response-dto";
+import { UserQueryModel } from "@application/query-repo/query-model";
 import { isNil } from "lodash";
 import { HOST } from "../shared";
 import { AggOps, Expr, Match, Project } from "../common";

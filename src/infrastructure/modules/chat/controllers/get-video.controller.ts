@@ -1,6 +1,6 @@
 import { Ports } from "@application/ports/constants";
 import { FindVideosQuery } from "@application/queries/find-videos/find-videos.query";
-import { VideoQueryModel } from "@application/query-repo/response-dto";
+import { VideoQueryModel } from "@application/query-repo/query-model";
 import { ChatId } from "@domain/models/chat/chat";
 import { FileId } from "@domain/models/file/file";
 import { FileStorageService } from "@infrastructure/modules/extra-modules/file-storage/file-storage.service";
