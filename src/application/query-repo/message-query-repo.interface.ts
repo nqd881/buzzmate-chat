@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { MessageResponseDto } from "./response-dto";
+import { MessageQueryModel } from "./query-model";
 
 export type QueryMessagesOptions = {
   chatId: string;
@@ -19,5 +19,5 @@ export interface IMessageQueryRepo {
   queryMessages(
     userId: string,
     options?: QueryMessagesOptions
-  ): MaybePromise<MessageResponseDto[]>;
+  ): MaybePromise<MessageQueryModel[]>;
 }

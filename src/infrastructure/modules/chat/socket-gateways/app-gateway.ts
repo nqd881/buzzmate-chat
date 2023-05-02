@@ -1,5 +1,5 @@
 import { FindChatsQuery } from "@application/queries/find-chats/find-chats.query";
-import { ChatResponseDto } from "@application/query-repo/response-dto";
+import { ChatQueryModel } from "@application/query-repo/response-dto";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { OnGatewayConnection, WebSocketGateway } from "@nestjs/websockets";
 import { Socket } from "socket.io";
@@ -25,7 +25,7 @@ export class AppGateway implements OnGatewayConnection {
       },
     });
 
-    return this.queryBus.execute<FindChatsQuery, ChatResponseDto[]>(query);
+    return this.queryBus.execute<FindChatsQuery, ChatQueryModel[]>(query);
   }
 
   private async checkUser(socket: Socket) {

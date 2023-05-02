@@ -3,7 +3,7 @@ import {
   QueryPhotosOptions,
 } from "@application/query-repo/photo-query-repo.interface";
 import { MongoUtils } from "../mongo-utils";
-import { PhotoResponseDto } from "@application/query-repo/response-dto";
+import { PhotoQueryModel } from "@application/query-repo/response-dto";
 import { AggOps, Expr, Lookup, Match, Project, Unwind } from "../common";
 import { isNil } from "lodash";
 import { FileGeneralPipelines } from "../file-query-repo/file-query-repo.repository";
@@ -54,6 +54,6 @@ export class PhotoQueryRepo implements IPhotoQueryRepo {
       )
       .toArray();
 
-    return photos as PhotoResponseDto[];
+    return photos as PhotoQueryModel[];
   }
 }

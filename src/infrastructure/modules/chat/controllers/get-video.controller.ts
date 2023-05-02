@@ -1,6 +1,6 @@
 import { Ports } from "@application/ports/constants";
 import { FindVideosQuery } from "@application/queries/find-videos/find-videos.query";
-import { VideoResponseDto } from "@application/query-repo/response-dto";
+import { VideoQueryModel } from "@application/query-repo/response-dto";
 import { ChatId } from "@domain/models/chat/chat";
 import { FileId } from "@domain/models/file/file";
 import { FileStorageService } from "@infrastructure/modules/extra-modules/file-storage/file-storage.service";
@@ -42,7 +42,7 @@ export class GetVideoController {
     try {
       const result = await this.queryBus.execute<
         FindVideosQuery,
-        VideoResponseDto[]
+        VideoQueryModel[]
       >(query);
 
       const video = result?.[0];

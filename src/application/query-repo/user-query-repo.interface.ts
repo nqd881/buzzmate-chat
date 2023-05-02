@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { UserResponseDto } from "./response-dto";
+import { UserQueryModel } from "./query-model";
 
 export type QueryUsersOptions = {
   limit?: number;
@@ -10,5 +10,5 @@ export type QueryUsersOptions = {
 };
 
 export interface IUserQueryRepo {
-  queryUsers(options?: QueryUsersOptions): MaybePromise<UserResponseDto[]>;
+  queryUsers(options?: QueryUsersOptions): MaybePromise<UserQueryModel[]>;
 }

@@ -2,7 +2,7 @@ import {
   IDocumentQueryRepo,
   QueryDocumentsOptions,
 } from "@application/query-repo/document-query-repo.interface";
-import { DocumentResponseDto } from "@application/query-repo/response-dto";
+import { DocumentQueryModel } from "@application/query-repo/response-dto";
 import { isNil } from "lodash";
 import { AggOps, Expr, Lookup, Match, Project, Unwind } from "../common";
 import { FileGeneralPipelines } from "../file-query-repo/file-query-repo.repository";
@@ -43,6 +43,6 @@ export class DocumentQueryRepo implements IDocumentQueryRepo {
       )
       .toArray();
 
-    return documents as DocumentResponseDto[];
+    return documents as DocumentQueryModel[];
   }
 }

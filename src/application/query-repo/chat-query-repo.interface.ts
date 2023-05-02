@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { ChatResponseDto } from "./response-dto";
+import { ChatQueryModel } from "./query-model";
 
 export type QueryChatsOptions = {
   byIds?: string[];
@@ -9,23 +9,9 @@ export type QueryChatsOptions = {
   returnPersonal?: boolean;
 };
 
-// export type GetUsersOptions = {
-//   limit?: number;
-//   byIds?: string[];
-//   byEmails?: string[];
-//   byNames?: string[];
-//   exclude?: string[];
-// };
-
 export interface IChatQueryRepo {
   queryChats(
     userId: string,
     options?: QueryChatsOptions
-  ): MaybePromise<ChatResponseDto[]>;
-
-  //
-  //
-  //
-
-  // getUsers(options?: GetUsersOptions): MaybePromise<UserResponseDto[]>;
+  ): MaybePromise<ChatQueryModel[]>;
 }

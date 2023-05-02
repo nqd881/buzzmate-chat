@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { VideoResponseDto } from "./response-dto";
+import { VideoQueryModel } from "./query-model";
 
 export type QueryVideosOptions = {
   limit?: number;
@@ -8,5 +8,5 @@ export type QueryVideosOptions = {
 };
 
 export interface IVideoQueryRepo {
-  queryVideos(options?: QueryVideosOptions): MaybePromise<VideoResponseDto[]>;
+  queryVideos(options?: QueryVideosOptions): MaybePromise<VideoQueryModel[]>;
 }

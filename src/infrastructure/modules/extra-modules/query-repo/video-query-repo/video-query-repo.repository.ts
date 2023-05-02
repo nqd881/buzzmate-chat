@@ -7,7 +7,7 @@ import { MongoUtils } from "../mongo-utils";
 import { AggOps, Expr, Lookup, Match, Project, Unwind } from "../common";
 import { FileGeneralPipelines } from "../file-query-repo/file-query-repo.repository";
 import { isNil } from "lodash";
-import { VideoResponseDto } from "@application/query-repo/response-dto";
+import { VideoQueryModel } from "@application/query-repo/response-dto";
 import { HOST } from "../shared";
 
 export const VideoGeneralPipelines = [
@@ -59,6 +59,6 @@ export class VideoQueryRepo implements IVideoQueryRepo {
       )
       .toArray();
 
-    return videos as VideoResponseDto[];
+    return videos as VideoQueryModel[];
   }
 }

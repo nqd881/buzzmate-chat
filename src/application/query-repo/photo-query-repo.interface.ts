@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { PhotoResponseDto } from "./response-dto";
+import { PhotoQueryModel } from "./query-model";
 
 export type QueryPhotosOptions = {
   limit?: number;
@@ -8,5 +8,5 @@ export type QueryPhotosOptions = {
 };
 
 export interface IPhotoQueryRepo {
-  queryPhotos(options?: QueryPhotosOptions): MaybePromise<PhotoResponseDto[]>;
+  queryPhotos(options?: QueryPhotosOptions): MaybePromise<PhotoQueryModel[]>;
 }

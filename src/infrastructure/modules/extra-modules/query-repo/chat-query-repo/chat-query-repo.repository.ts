@@ -2,7 +2,7 @@ import {
   QueryChatsOptions,
   IChatQueryRepo,
 } from "@application/query-repo/chat-query-repo.interface";
-import { ChatResponseDto } from "@application/query-repo/response-dto";
+import { ChatQueryModel } from "@application/query-repo/response-dto";
 import { ChatTypes } from "@domain/models/chat/chat";
 import { Injectable } from "@nestjs/common";
 import { isNil } from "lodash";
@@ -66,7 +66,7 @@ export class ChatQueryRepo implements IChatQueryRepo {
   async queryChats(
     userId: string,
     options?: QueryChatsOptions
-  ): Promise<ChatResponseDto[]> {
+  ): Promise<ChatQueryModel[]> {
     const chats = await this.mongoUtils
       .getCollection("dbusers")
       .aggregate(
@@ -135,6 +135,6 @@ export class ChatQueryRepo implements IChatQueryRepo {
       )
       .toArray();
 
-    return chats as ChatResponseDto[];
+    return chats as ChatQueryModel[];
   }
 }

@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { DocumentResponseDto } from "./response-dto";
+import { DocumentQueryModel } from "./query-model";
 
 export type QueryDocumentsOptions = {
   limit?: number;
@@ -10,5 +10,5 @@ export type QueryDocumentsOptions = {
 export interface IDocumentQueryRepo {
   queryDocuments(
     options?: QueryDocumentsOptions
-  ): MaybePromise<DocumentResponseDto[]>;
+  ): MaybePromise<DocumentQueryModel[]>;
 }

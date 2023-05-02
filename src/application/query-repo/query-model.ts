@@ -1,4 +1,4 @@
-export class UserResponseDto {
+export class UserQueryModel {
   id: string;
   identity: string;
   emailAddress: string;
@@ -6,7 +6,7 @@ export class UserResponseDto {
   type: string;
 }
 
-export class MemberResponseDto {
+export class MemberQueryModel {
   id: string;
   chatId: string;
   userId: string;
@@ -20,10 +20,9 @@ export class MemberResponseDto {
   bannedDate?: number;
   isAdmin?: boolean;
   isOwner?: boolean;
-  // isMe?: boolean;
 }
 
-export class FileResponseDto {
+export class FileQueryModel {
   id: string;
   name: string;
   size: number;
@@ -31,40 +30,40 @@ export class FileResponseDto {
   date: Date;
 }
 
-export class PhotoResponseDto {
+export class PhotoQueryModel {
   id: string;
   width: number;
   height: number;
-  file: FileResponseDto;
+  file: FileQueryModel;
   url: string;
 }
 
-export class VideoResponseDto {
+export class VideoQueryModel {
   id: string;
   width: number;
   height: number;
   duration: number;
   thumbnail: any;
-  file: FileResponseDto;
+  file: FileQueryModel;
   url: string;
 }
 
-export class DocumentResponseDto {
+export class DocumentQueryModel {
   id: string;
-  file: FileResponseDto;
+  file: FileQueryModel;
   url: string;
 }
 
-export class MessageResponseDto {
+export class MessageQueryModel {
   id: string;
   chatId: string;
   senderUserId: string;
-  sentByMember: MemberResponseDto;
+  sentByMember: MemberQueryModel;
   content: {
     text: string;
-    photos: PhotoResponseDto[];
-    videos: VideoResponseDto[];
-    documents: DocumentResponseDto[];
+    photos: PhotoQueryModel[];
+    videos: VideoQueryModel[];
+    documents: DocumentQueryModel[];
   };
   date: number;
   editDate: number;
@@ -79,14 +78,14 @@ export class MessageResponseDto {
   reactions?: any;
 }
 
-export class ChatResponseDto {
+export class ChatQueryModel {
   id: string;
   title: string;
   description: string;
   isGroupChat: boolean;
   isPrivateChat: boolean;
   isSelfChat: boolean;
-  lastMessage: MessageResponseDto;
+  lastMessage: MessageQueryModel;
   memberCount: number;
   isFave?: boolean;
   isArchived?: boolean;

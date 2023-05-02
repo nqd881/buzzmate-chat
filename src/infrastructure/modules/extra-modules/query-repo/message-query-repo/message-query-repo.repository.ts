@@ -24,7 +24,7 @@ import { MemberGeneralPipelines } from "../member-query-repo/member-query-repo.r
 import { PhotoGeneralPipelines } from "../photo-query-repo/photo-query-repo.repository";
 import { VideoGeneralPipelines } from "../video-query-repo/video-query-repo.repository";
 import { DocumentGeneralPipelines } from "../document-query-repo/document-query-repo.repository";
-import { MessageResponseDto } from "@application/query-repo/response-dto";
+import { MessageQueryModel } from "@application/query-repo/response-dto";
 
 export const MessageGeneralPipelines = [
   Set({
@@ -334,6 +334,6 @@ export class MessageQueryRepo implements IMessageQueryRepo {
       )
       .toArray();
 
-    return messages as MessageResponseDto[];
+    return messages as MessageQueryModel[];
   }
 }
