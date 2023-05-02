@@ -6,7 +6,7 @@ export class UserResponseDto {
   type: string;
 }
 
-export class ChatMemberResponseDto {
+export class MemberResponseDto {
   id: string;
   chatId: string;
   userId: string;
@@ -59,7 +59,7 @@ export class MessageResponseDto {
   id: string;
   chatId: string;
   senderUserId: string;
-  sentByMember: ChatMemberResponseDto;
+  sentByMember: MemberResponseDto;
   content: {
     text: string;
     photos: PhotoResponseDto[];

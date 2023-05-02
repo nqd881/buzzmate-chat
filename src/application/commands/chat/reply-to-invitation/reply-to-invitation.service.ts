@@ -1,11 +1,11 @@
 import {
-  ChatInvitationId,
-  ChatInvitationResponse,
-} from "@domain/models/chat-invitation/chat-invitation";
+  InvitationId,
+  InvitationResponse,
+} from "@domain/models/invitation/invitation";
 import { UserId } from "@domain/models/user/user";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ReplyToInvitationCommand } from "./reply-to-invitation.command";
-import { IChatInvitationRepo } from "@domain/models/chat-invitation/chat-invitation-repo.interface";
+import { IInvitationRepo } from "@domain/models/invitation/invitation-repo.interface";
 import { Inject } from "@nestjs/common";
 import { Repositories } from "@application/di-tokens/repositories";
 import { ChatDomainService } from "@domain/services/chat";
@@ -13,13 +13,13 @@ import { ChatDomainService } from "@domain/services/chat";
 @CommandHandler(ReplyToInvitationCommand)
 export class ReplyToInvitationService implements ICommandHandler {
   constructor(
-    @Inject(Repositories.ChatInvitation)
-    private chatInvitationRepo: IChatInvitationRepo
+    @Inject(Repositories.Invitation)
+    private chatInvitationRepo: IInvitationRepo
   ) {}
 
   async execute(command: ReplyToInvitationCommand) {
     const userId = new UserId(command.metadata.userId);
-    const invitationId = new ChatInvitationId(command.invitationId);
+    const invitationId = new InvitationId(command.invitationId);
     const { accept } = command;
 
     const invitation = await this.chatInvitationRepo.findOneById(invitationId);
@@ -28,7 +28,7 @@ export class ReplyToInvitationService implements ICommandHandler {
 
     if (invitation.invitedUserId.equals(userId)) {
       invitation.updateResponse(
-        accept ? ChatInvitationResponse.ACCEPT : ChatInvitationResponse.DECLINE
+        accept ? InvitationResponse.ACCEPT : InvitationResponse.DECLINE
       );
     }
 

@@ -10,8 +10,8 @@ import { ReplyToInvitationService } from "@application/commands/chat/reply-to-in
 import { SendMessageService } from "@application/commands/chat/send-message/send-message.service";
 import { SendReactionService } from "@application/commands/chat/send-reaction/send-reaction.service";
 import { ChatDomainEventHandlers } from "@application/domain-event-handlers/chat";
-import { ChatInvitationDomainEventHandlers } from "@application/domain-event-handlers/chat-invitation";
-import { ChatMemberDomainEventHandlers } from "@application/domain-event-handlers/chat-member";
+import { InvitationDomainEventHandlers } from "@application/domain-event-handlers/invitation";
+import { MemberDomainEventHandlers } from "@application/domain-event-handlers/member";
 import { MessageDomainEventHandlers } from "@application/domain-event-handlers/message";
 import { FindChatsService } from "@application/queries/find-chats/find-chats.service";
 import { FindMessagesService } from "@application/queries/find-messages/find-messages.service";
@@ -48,7 +48,7 @@ import { JoinChatController } from "./controllers/join-chat.controller";
 import { FindPhotosService } from "@application/queries/find-photos/find-photos.service";
 import { FindVideosService } from "@application/queries/find-videos/find-videos.service";
 import { FindDocumentsService } from "@application/queries/find-documents/find-documents.service";
-import { GetChatMembersController } from "./controllers/get-members.controller";
+import { GetMembersController } from "./controllers/get-members.controller";
 import { FindMembersService } from "@application/queries/find-members/find-members.service";
 import { SOCKET_DOMAIN_EVENT_LISTENERS } from "./socket-gateways/domain-event-listener";
 import { ForwardMessageService } from "@application/commands/chat/foward-message/forward-message.service";
@@ -81,8 +81,8 @@ const commandHandlers = [
 
 const eventHandlers = [
   ...ChatDomainEventHandlers,
-  ...ChatMemberDomainEventHandlers,
-  ...ChatInvitationDomainEventHandlers,
+  ...MemberDomainEventHandlers,
+  ...InvitationDomainEventHandlers,
   ...MessageDomainEventHandlers,
 ];
 
@@ -111,7 +111,7 @@ const httpControllers = [
   GetChatController,
   GetMessagesController,
   GetMessageController,
-  GetChatMembersController,
+  GetMembersController,
 ];
 
 const socketGateways = [

@@ -6,7 +6,7 @@ import { UserId } from "@domain/models/user/user";
 import { ChatId } from "@domain/models/chat/chat";
 import { IMemberRepo } from "@domain/models/member/member-repo.interface";
 import { ChatDomainService } from "@domain/services/chat";
-import { IChatInvitationRepo } from "@domain/models/chat-invitation/chat-invitation-repo.interface";
+import { IInvitationRepo } from "@domain/models/invitation/invitation-repo.interface";
 import { InviteToChatCommand } from "./invite-to-chat.command";
 
 @CommandHandler(InviteToChatCommand)
@@ -15,8 +15,8 @@ export class InviteToChatService implements ICommandHandler {
     @Inject(Repositories.Chat) private readonly chatRepo: IChatRepo,
     @Inject(Repositories.Member)
     private readonly memberRepo: IMemberRepo,
-    @Inject(Repositories.ChatInvitation)
-    private readonly chatInvitationRepo: IChatInvitationRepo
+    @Inject(Repositories.Invitation)
+    private readonly chatInvitationRepo: IInvitationRepo
   ) {}
 
   async execute(command: InviteToChatCommand) {

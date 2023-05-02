@@ -59,7 +59,7 @@ export const MessageGeneralPipelines = [
     ),
   }),
   Lookup(
-    "dbchatmembers",
+    "dbmembers",
     {
       chatId: "$chatId",
       senderUserId: "$senderUserId",
@@ -293,7 +293,7 @@ export class MessageQueryRepo implements IMessageQueryRepo {
     };
 
     const messages = await this.mongoUtils
-      .getCollection("dbchatmembers")
+      .getCollection("dbmembers")
       .aggregate(
         [
           Match(

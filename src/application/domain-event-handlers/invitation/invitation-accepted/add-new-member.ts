@@ -1,7 +1,6 @@
 import { Repositories } from "@application/di-tokens/repositories";
-import { ChatInvitationId } from "@domain/models/chat-invitation/chat-invitation";
-import { IChatInvitationRepo } from "@domain/models/chat-invitation/chat-invitation-repo.interface";
-import { ChatInvitationAcceptedDomainEvent } from "@domain/models/chat-invitation/events/chat-invitation-accepted";
+import { InvitationAcceptedDomainEvent } from "@domain/models/invitation/events/invitation-accepted";
+import { IInvitationRepo } from "@domain/models/invitation/invitation-repo.interface";
 import { Member } from "@domain/models/member/member";
 import { IMemberRepo } from "@domain/models/member/member-repo.interface";
 import { MemberStatusActive } from "@domain/models/member/member-status/member-status-active";
@@ -17,15 +16,15 @@ export class AddNewMember {
     @Inject(Repositories.Member)
     private readonly memberRepo: IMemberRepo,
 
-    @Inject(Repositories.ChatInvitation)
-    private readonly chatInvitationRepo: IChatInvitationRepo
+    @Inject(Repositories.Invitation)
+    private readonly chatInvitationRepo: IInvitationRepo
   ) {}
 
-  @OnEvent(DomainEventName(ChatInvitationAcceptedDomainEvent), {
+  @OnEvent(DomainEventName(InvitationAcceptedDomainEvent), {
     async: true,
     promisify: true,
   })
-  async addNewMember(event: ChatInvitationAcceptedDomainEvent) {
+  async addNewMember(event: InvitationAcceptedDomainEvent) {
     const { invitationId } = event;
 
     const invitation = await this.chatInvitationRepo.findOneById(invitationId);

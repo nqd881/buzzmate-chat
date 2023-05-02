@@ -6,7 +6,7 @@ import { Inject } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 import { MemberCreatedDomainEvent } from "@domain/models/member/events/member-created";
 
-export class UpdateChatMemberCount {
+export class UpdateMemberCount {
   constructor(
     @Inject(Repositories.Chat) private readonly chatRepo: IChatRepo,
     @Inject(Repositories.Member)

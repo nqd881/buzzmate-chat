@@ -1,10 +1,7 @@
 import { Repositories } from "@application/di-tokens/repositories";
 import { ChatAdmin } from "@domain/models/chat-admin/chat-admin";
 import { IChatAdminRepo } from "@domain/models/chat-admin/chat-admin-repo.interface";
-import {
-  Member,
-  // ChatMemberStatus,
-} from "@domain/models/member/member";
+import { Member } from "@domain/models/member/member";
 import { IMemberRepo } from "@domain/models/member/member-repo.interface";
 import { MemberStatusActive } from "@domain/models/member/member-status/member-status-active";
 import { MemberStatusLeft } from "@domain/models/member/member-status/member-status-left";

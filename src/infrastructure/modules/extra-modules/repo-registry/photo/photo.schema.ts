@@ -6,9 +6,6 @@ import { MongoDocBase } from "../mongo-doc-base";
 })
 export class DbPhoto extends MongoDocBase {
   @Prop()
-  chatId: string;
-
-  @Prop()
   width: number;
 
   @Prop()

@@ -4,7 +4,7 @@ import { MongoDocBase } from "../mongo-doc-base";
 @Schema({
   versionKey: false,
 })
-export class DbChatInvitation extends MongoDocBase {
+export class DbInvitation extends MongoDocBase {
   @Prop()
   chatId: string;
 
@@ -21,5 +21,4 @@ export class DbChatInvitation extends MongoDocBase {
   response: string;
 }
 
-export const DbChatInvitationSchema =
-  SchemaFactory.createForClass(DbChatInvitation);
+export const DbInvitationSchema = SchemaFactory.createForClass(DbInvitation);

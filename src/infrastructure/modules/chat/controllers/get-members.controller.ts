@@ -6,7 +6,7 @@ import { GetMembersQuery } from "./dto/get-members.query";
 import { FindMembersQuery } from "@application/queries/find-members/find-members.query";
 
 @Controller("chats/:chat_id")
-export class GetChatMembersController {
+export class GetMembersController {
   constructor(private queryBus: QueryBus) {}
 
   @Get("members")

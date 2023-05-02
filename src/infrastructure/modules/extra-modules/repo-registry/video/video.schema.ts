@@ -1,5 +1,5 @@
-import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
-import {MongoDocBase} from "../mongo-doc-base";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { MongoDocBase } from "../mongo-doc-base";
 
 @Schema({
   _id: false,
@@ -14,9 +14,6 @@ export class DbThumbnail {
 })
 export class DbVideo extends MongoDocBase {
   @Prop()
-  chatId: string;
-
-  @Prop()
   duration: number;
 
   @Prop()
@@ -25,7 +22,7 @@ export class DbVideo extends MongoDocBase {
   @Prop()
   height: number;
 
-  @Prop({type: DbThumbnail})
+  @Prop({ type: DbThumbnail })
   thumbnail: DbThumbnail;
 
   @Prop()

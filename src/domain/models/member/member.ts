@@ -52,19 +52,19 @@ export class Member extends AggregateRoot<MemberId, IMemberProps> {
   validate() {}
 
   static create(props: IMemberProps) {
-    const newChatMember = new Member(props, 0);
+    const newMember = new Member(props, 0);
 
-    newChatMember.addEvent(
+    newMember.addEvent(
       new MemberCreatedDomainEvent({
-        aggregateId: newChatMember.id,
-        memberId: newChatMember.id,
-        chatId: newChatMember.chatId,
-        userId: newChatMember.userId,
-        name: newChatMember.name,
+        aggregateId: newMember.id,
+        memberId: newMember.id,
+        chatId: newMember.chatId,
+        userId: newMember.userId,
+        name: newMember.name,
       })
     );
 
-    return newChatMember;
+    return newMember;
   }
 
   get chatId() {

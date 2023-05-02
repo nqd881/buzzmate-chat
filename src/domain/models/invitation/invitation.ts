@@ -1,52 +1,45 @@
 import { AggregateRoot, EntityId } from "@libs/ddd";
 import { UserId } from "../user/user";
 import { ChatId } from "../chat/chat";
-import { ChatInvitationCreatedDomainEvent } from "./events/chat-invitation-created";
-import { ChatInvitationAcceptedDomainEvent } from "./events/chat-invitation-accepted";
-import { ChatInvitationDeclinedDomainEvent } from "./events/chat-invitation-declined";
+import { InvitationCreatedDomainEvent } from "./events/invitation-created";
+import { InvitationAcceptedDomainEvent } from "./events/invitation-accepted";
+import { InvitationDeclinedDomainEvent } from "./events/invitation-declined";
 
-export enum ChatInvitationStatus {
+export enum InvitationStatus {
   PENDING = "pending",
   ACCEPTED = "accepted",
   DECLINED = "declined",
   EXPIRED = "expired",
 }
 
-export enum ChatInvitationResponse {
+export enum InvitationResponse {
   ACCEPT = "accept",
   DECLINE = "decline",
 }
 
-export interface IChatInvitationProps {
+export interface IInvitationProps {
   inviterUserId: UserId;
   invitedUserId: UserId;
   chatId: ChatId;
   expiredAt: Date;
-  response: ChatInvitationResponse;
+  response: InvitationResponse;
 }
 
-export class ChatInvitationId extends EntityId {}
+export class InvitationId extends EntityId {}
 
-export class ChatInvitation extends AggregateRoot<
-  ChatInvitationId,
-  IChatInvitationProps
-> {
+export class Invitation extends AggregateRoot<InvitationId, IInvitationProps> {
   private _inviterUserId: UserId;
   private _invitedUserId: UserId;
   private _chatId: ChatId;
   private _expiredAt: Date;
-  private _response: ChatInvitationResponse;
+  private _response: InvitationResponse;
 
-  constructor(
-    props: IChatInvitationProps,
-    version: number,
-    id?: ChatInvitationId
-  ) {
+  constructor(props: IInvitationProps, version: number, id?: InvitationId) {
     super(props, version, id);
   }
 
   get IdConstructor() {
-    return ChatInvitationId;
+    return InvitationId;
   }
 
   protected init() {
@@ -61,11 +54,11 @@ export class ChatInvitation extends AggregateRoot<
 
   validate() {}
 
-  static create(props: IChatInvitationProps) {
-    const newInvitation = new ChatInvitation(props, 0);
+  static create(props: IInvitationProps) {
+    const newInvitation = new Invitation(props, 0);
 
     newInvitation.addEvent(
-      new ChatInvitationCreatedDomainEvent({
+      new InvitationCreatedDomainEvent({
         aggregateId: newInvitation.id,
         invitationId: newInvitation.id,
         chatId: newInvitation.chatId,
@@ -98,38 +91,38 @@ export class ChatInvitation extends AggregateRoot<
     return this._response;
   }
 
-  status(): ChatInvitationStatus {
+  status(): InvitationStatus {
     const now = new Date();
 
     if (now.getTime() >= this.expiredAt.getTime())
-      return ChatInvitationStatus.EXPIRED;
+      return InvitationStatus.EXPIRED;
 
-    if (this.response === ChatInvitationResponse.ACCEPT)
-      return ChatInvitationStatus.ACCEPTED;
+    if (this.response === InvitationResponse.ACCEPT)
+      return InvitationStatus.ACCEPTED;
 
-    if (this.response === ChatInvitationResponse.DECLINE)
-      return ChatInvitationStatus.DECLINED;
+    if (this.response === InvitationResponse.DECLINE)
+      return InvitationStatus.DECLINED;
 
-    return ChatInvitationStatus.PENDING;
+    return InvitationStatus.PENDING;
   }
 
   isPending() {
-    return this.status() === ChatInvitationStatus.PENDING;
+    return this.status() === InvitationStatus.PENDING;
   }
 
   isAccepted() {
-    return this.status() === ChatInvitationStatus.ACCEPTED;
+    return this.status() === InvitationStatus.ACCEPTED;
   }
 
   isDeclined() {
-    return this.status() === ChatInvitationStatus.DECLINED;
+    return this.status() === InvitationStatus.DECLINED;
   }
 
   isExpired() {
-    return this.status() === ChatInvitationStatus.EXPIRED;
+    return this.status() === InvitationStatus.EXPIRED;
   }
 
-  updateResponse(response: ChatInvitationResponse) {
+  updateResponse(response: InvitationResponse) {
     if (!this.isPending()) return;
 
     this.update(() => {
@@ -138,7 +131,7 @@ export class ChatInvitation extends AggregateRoot<
 
     if (this.isAccepted())
       this.addEvent(
-        new ChatInvitationAcceptedDomainEvent({
+        new InvitationAcceptedDomainEvent({
           aggregateId: this.id,
           invitationId: this.id,
         })
@@ -146,7 +139,7 @@ export class ChatInvitation extends AggregateRoot<
 
     if (this.isDeclined())
       this.addEvent(
-        new ChatInvitationDeclinedDomainEvent({
+        new InvitationDeclinedDomainEvent({
           aggregateId: this.id,
           invitationId: this.id,
         })

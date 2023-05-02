@@ -1,13 +1,13 @@
-import {VideoCreatedDomainEvent} from "@domain/models/video/events/video-created";
+import { VideoCreatedDomainEvent } from "@domain/models/video/events/video-created";
 import {
   AggregateRoot,
   EntityId,
   ValueObject,
   ValueObjectProps,
 } from "@libs/ddd";
-import {ChatId} from "../chat/chat";
-import {FileId} from "../file/file";
-import {PhotoId} from "../photo/photo";
+import { ChatId } from "../chat/chat";
+import { FileId } from "../file/file";
+import { PhotoId } from "../photo/photo";
 
 export interface IThumbnailProps {
   photoId: PhotoId;
@@ -26,7 +26,6 @@ export class Thumbnail extends ValueObject<IThumbnailProps> {
 }
 
 export interface IVideoProps {
-  chatId: ChatId;
   duration: number;
   width: number;
   height: number;
@@ -37,7 +36,6 @@ export interface IVideoProps {
 export class VideoId extends EntityId {}
 
 export class Video extends AggregateRoot<VideoId, IVideoProps> {
-  protected _chatId: ChatId;
   protected _duration: number;
   protected _width: number;
   protected _height: number;
@@ -53,7 +51,6 @@ export class Video extends AggregateRoot<VideoId, IVideoProps> {
   }
 
   protected init() {
-    this._chatId = this.props.chatId;
     this._duration = this.props.duration;
     this._width = this.props.width;
     this._height = this.props.height;
@@ -71,16 +68,11 @@ export class Video extends AggregateRoot<VideoId, IVideoProps> {
     newVideo.addEvent(
       new VideoCreatedDomainEvent({
         aggregateId: newVideo.id,
-        chatId: newVideo.chatId,
         videoId: newVideo.id,
       })
     );
 
     return newVideo;
-  }
-
-  get chatId() {
-    return this._chatId;
   }
 
   get duration() {

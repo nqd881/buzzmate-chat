@@ -2,18 +2,18 @@ import { ChatId } from "@domain/models/chat/chat";
 import { UserId } from "@domain/models/user/user";
 import { IDomainPersistenceMapper } from "@libs/ddd";
 import { Injectable } from "@nestjs/common";
-import { DbChatInvitation } from "./chat-invitation.schema";
+import { DbInvitation } from "./chat-invitation.schema";
 import {
-  ChatInvitation,
-  ChatInvitationId,
-  ChatInvitationResponse,
-} from "@domain/models/chat-invitation/chat-invitation";
+  Invitation,
+  InvitationId,
+  InvitationResponse,
+} from "@domain/models/invitation/invitation";
 
 @Injectable()
-export class ChatInvitationMapper
-  implements IDomainPersistenceMapper<ChatInvitation, DbChatInvitation>
+export class InvitationMapper
+  implements IDomainPersistenceMapper<Invitation, DbInvitation>
 {
-  toPersistence(entity: ChatInvitation): DbChatInvitation {
+  toPersistence(entity: Invitation): DbInvitation {
     if (!entity) return null;
 
     const {
@@ -37,7 +37,7 @@ export class ChatInvitationMapper
     };
   }
 
-  toDomain(dbModel: DbChatInvitation): ChatInvitation {
+  toDomain(dbModel: DbInvitation): Invitation {
     if (!dbModel) return null;
 
     const {
@@ -50,16 +50,16 @@ export class ChatInvitationMapper
       __version,
     } = dbModel;
 
-    return new ChatInvitation(
+    return new Invitation(
       {
         chatId: new ChatId(chatId),
         inviterUserId: new UserId(inviterUserId),
         invitedUserId: new UserId(invitedUserId),
         expiredAt,
-        response: response as ChatInvitationResponse,
+        response: response as InvitationResponse,
       },
       __version,
-      new ChatInvitationId(_id)
+      new InvitationId(_id)
     );
   }
 }

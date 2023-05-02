@@ -27,7 +27,7 @@ export class PinMessagesService implements ICommandHandler {
 
     const member = await this.memberRepo.findOneInChatByUserId(chatId, userId);
 
-    if (!member) throw new Error("Chat member not found");
+    if (!member) throw new Error("Member not found");
 
     const messages = await this.messageRepo.findManyOfChatById(
       chatId,

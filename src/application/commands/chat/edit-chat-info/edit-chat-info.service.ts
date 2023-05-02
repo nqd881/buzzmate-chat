@@ -28,7 +28,7 @@ export class EditChatInfoService implements ICommandHandler {
 
     if (!chat) throw new Error("Chat not found");
 
-    if (!member) throw new Error("Chat member not found");
+    if (!member) throw new Error("Member not found");
 
     if (title) chat.editTitle(title);
     if (description) chat.editDescription(description);

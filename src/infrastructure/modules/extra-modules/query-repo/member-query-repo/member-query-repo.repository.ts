@@ -7,7 +7,7 @@ import {
 import { AggOps, Expr, Lookup, Match, Project, Set } from "../common";
 import { MemberStatusLeft } from "@domain/models/member/member-status/member-status-left";
 import { MemberStatusBanned } from "@domain/models/member/member-status/member-status-banned";
-import { ChatMemberResponseDto } from "@application/query-repo/response-dto";
+import { MemberResponseDto } from "@application/query-repo/response-dto";
 import { isNil } from "lodash";
 
 export const MemberGeneralPipelines = [
@@ -93,7 +93,7 @@ export class MemberQueryRepo implements IMemberQueryRepo {
     const { chatId, byIds } = options;
 
     const members = await this.mongoUtils
-      .getCollection("dbchatmembers")
+      .getCollection("dbmembers")
       .aggregate(
         [
           Match(Expr(AggOps.Eq("$chatId", chatId))),
@@ -103,6 +103,6 @@ export class MemberQueryRepo implements IMemberQueryRepo {
       )
       .toArray();
 
-    return members as ChatMemberResponseDto[];
+    return members as MemberResponseDto[];
   }
 }

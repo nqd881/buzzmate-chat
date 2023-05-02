@@ -13,18 +13,18 @@ import { Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import EventEmitter2 from "eventemitter2";
 import { Model } from "mongoose";
-import { ChatMemberMapper } from "./chat-member.mapper";
-import { DbChatMember } from "./chat-member.schema";
+import { MemberMapper } from "./member.mapper";
+import { DbMember } from "./member.schema";
 
 @Injectable()
-export class ChatMemberRepository
-  extends MongoRepository<Member, DbChatMember>
+export class MemberRepository
+  extends MongoRepository<Member, DbMember>
   implements IMemberRepo
 {
   constructor(
-    @InjectModel(DbChatMember.name) dbModel: Model<DbChatMember>,
+    @InjectModel(DbMember.name) dbModel: Model<DbMember>,
     @Inject(DOMAIN_EVENT_BUS) domainEventBus: EventEmitter2,
-    @Inject(DomainPersistenceMappers.Member) mapper: ChatMemberMapper
+    @Inject(DomainPersistenceMappers.Member) mapper: MemberMapper
   ) {
     super(dbModel, domainEventBus, mapper);
   }

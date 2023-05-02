@@ -8,7 +8,7 @@ import {
 import { Server } from "socket.io";
 
 @WebSocketGateway(4001, { cors: true })
-export class ChatMemberCreatedSocketListener implements OnGatewayInit {
+export class MemberCreatedSocketListener implements OnGatewayInit {
   @WebSocketServer()
   server: Server;
 

@@ -45,12 +45,12 @@ export class ForwardMessageService implements ICommandHandler {
     const toChatId = new ChatId(command.toChatId);
     const messageId = new MessageId(command.messageId);
 
-    const rootChatMember = await this.memberRepo.findOneInChatByUserId(
+    const rootMember = await this.memberRepo.findOneInChatByUserId(
       fromChatId,
       userId
     );
 
-    if (!rootChatMember) throw new Error("Root chat member not found");
+    if (!rootMember) throw new Error("Root chat member not found");
 
     const [chat, member] = await Promise.all([
       this.chatRepo.findOneById(toChatId),
@@ -59,7 +59,7 @@ export class ForwardMessageService implements ICommandHandler {
 
     if (!chat) throw new Error("Chat not found");
 
-    if (!member) throw new Error("Chat member not found");
+    if (!member) throw new Error("Member not found");
 
     const message = await this.messageRepo.findOneById(messageId);
 
@@ -126,7 +126,6 @@ export class ForwardMessageService implements ICommandHandler {
 
       return Photo.create({
         ...photoProps,
-        chatId: toChatId,
         fileId: newForwardFile.id,
       });
     });
@@ -144,7 +143,6 @@ export class ForwardMessageService implements ICommandHandler {
 
       return Video.create({
         ...videoProps,
-        chatId: toChatId,
         fileId: newForwardFile.id,
       });
     });
@@ -162,7 +160,6 @@ export class ForwardMessageService implements ICommandHandler {
 
       return Document.create({
         ...documentProps,
-        chatId: toChatId,
         fileId: newForwardFile.id,
       });
     });

@@ -1,5 +1,3 @@
-// import { ChatInvitation } from "@domain/models/chat-invitation";
-import { ChatInvitation } from "@domain/models/chat-invitation/chat-invitation";
 import { ChatOwner } from "@domain/models/chat-owner/chat-owner";
 import {
   Chat,
@@ -7,6 +5,7 @@ import {
   ChatTypes,
   IChatProps,
 } from "@domain/models/chat/chat";
+import { Invitation } from "@domain/models/invitation/invitation";
 import { Member } from "@domain/models/member/member";
 import { MemberStatusActive } from "@domain/models/member/member-status/member-status-active";
 import { User, UserId } from "@domain/models/user/user";
@@ -68,7 +67,7 @@ export class ChatDomainService {
 
     if (!chat.isProtected()) throw new Error("Chat is unprotected");
 
-    const newInvitation = ChatInvitation.create({
+    const newInvitation = Invitation.create({
       inviterUserId: member.userId,
       invitedUserId,
       chatId: chat.id,

@@ -2,29 +2,26 @@ import { DomainPersistenceMappers } from "@application/di-tokens/domain-persiste
 import { Repositories } from "@application/di-tokens/repositories";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { ChatInvitationMapper } from "./chat-invitation.mapper";
-import { ChatInvitationRepository } from "./chat-invitation.repository";
-import {
-  DbChatInvitation,
-  DbChatInvitationSchema,
-} from "./chat-invitation.schema";
+import { InvitationMapper } from "./chat-invitation.mapper";
+import { InvitationRepository } from "./chat-invitation.repository";
+import { DbInvitation, DbInvitationSchema } from "./chat-invitation.schema";
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: DbChatInvitation.name, schema: DbChatInvitationSchema },
+      { name: DbInvitation.name, schema: DbInvitationSchema },
     ]),
   ],
   providers: [
     {
-      provide: Repositories.ChatInvitation,
-      useClass: ChatInvitationRepository,
+      provide: Repositories.Invitation,
+      useClass: InvitationRepository,
     },
     {
-      provide: DomainPersistenceMappers.ChatInvitation,
-      useClass: ChatInvitationMapper,
+      provide: DomainPersistenceMappers.Invitation,
+      useClass: InvitationMapper,
     },
   ],
-  exports: [Repositories.ChatInvitation],
+  exports: [Repositories.Invitation],
 })
-export class ChatInvitationRepoModule {}
+export class InvitationRepoModule {}
