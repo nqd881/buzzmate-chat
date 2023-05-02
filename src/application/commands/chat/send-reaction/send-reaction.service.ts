@@ -1,20 +1,20 @@
-import {Repositories} from "@application/di-tokens/repositories";
-import {IChatMemberRepo} from "@domain/models/chat-member/chat-member-repo.interface";
-import {ChatId} from "@domain/models/chat/chat";
-import {MessageId} from "@domain/models/message/message";
-import {MessageReaction} from "@domain/models/message/message-reaction";
-import {IMessageRepo} from "@domain/models/message/message-repo.interface";
-import {UserId} from "@domain/models/user/user";
-import {Inject} from "@nestjs/common";
-import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
-import {SendReactionCommand} from "./send-reaction.command";
+import { Repositories } from "@application/di-tokens/repositories";
+import { IMemberRepo } from "@domain/models/member/member-repo.interface";
+import { ChatId } from "@domain/models/chat/chat";
+import { MessageId } from "@domain/models/message/message";
+import { MessageReaction } from "@domain/models/message/message-reaction";
+import { IMessageRepo } from "@domain/models/message/message-repo.interface";
+import { UserId } from "@domain/models/user/user";
+import { Inject } from "@nestjs/common";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { SendReactionCommand } from "./send-reaction.command";
 
 @CommandHandler(SendReactionCommand)
 export class SendReactionService implements ICommandHandler {
   constructor(
     @Inject(Repositories.Message) private readonly messageRepo: IMessageRepo,
-    @Inject(Repositories.ChatMember)
-    private readonly chatMemberRepo: IChatMemberRepo
+    @Inject(Repositories.Member)
+    private readonly memberRepo: IMemberRepo
   ) {}
 
   async execute(command: SendReactionCommand) {
@@ -23,12 +23,9 @@ export class SendReactionService implements ICommandHandler {
     const messageId = new MessageId(command.messageId);
     const reactionValue = command?.reactionValue;
 
-    const chatMember = await this.chatMemberRepo.findOneInChatByUserId(
-      chatId,
-      userId
-    );
+    const member = await this.memberRepo.findOneInChatByUserId(chatId, userId);
 
-    if (!chatMember) throw new Error("Chat member not found");
+    if (!member) throw new Error("Chat member not found");
 
     const message = await this.messageRepo.findOneOfChatById(chatId, messageId);
 
@@ -36,7 +33,7 @@ export class SendReactionService implements ICommandHandler {
 
     message.addReaction(
       new MessageReaction({
-        chatMemberId: chatMember.id,
+        memberId: member.id,
         reactionValue,
       })
     );

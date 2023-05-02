@@ -1,11 +1,11 @@
 import { DOMAIN_EVENT_BUS } from "@application/di-tokens/domain-event-bus";
 import { DomainPersistenceMappers } from "@application/di-tokens/domain-persistence-mappers";
-import { ChatMember } from "@domain/models/chat-member/chat-member";
+import { Member } from "@domain/models/member/member";
 import {
   FindInChatOptions,
-  IChatMemberRepo,
-} from "@domain/models/chat-member/chat-member-repo.interface";
-import { ChatMemberStatusActive } from "@domain/models/chat-member/chat-member-status/chat-member-status-active";
+  IMemberRepo,
+} from "@domain/models/member/member-repo.interface";
+import { MemberStatusActive } from "@domain/models/member/member-status/member-status-active";
 import { ChatId } from "@domain/models/chat/chat";
 import { UserId } from "@domain/models/user/user";
 import { MongoRepository } from "@infrastructure/db/mongo-repository";
@@ -18,13 +18,13 @@ import { DbChatMember } from "./chat-member.schema";
 
 @Injectable()
 export class ChatMemberRepository
-  extends MongoRepository<ChatMember, DbChatMember>
-  implements IChatMemberRepo
+  extends MongoRepository<Member, DbChatMember>
+  implements IMemberRepo
 {
   constructor(
     @InjectModel(DbChatMember.name) dbModel: Model<DbChatMember>,
     @Inject(DOMAIN_EVENT_BUS) domainEventBus: EventEmitter2,
-    @Inject(DomainPersistenceMappers.ChatMember) mapper: ChatMemberMapper
+    @Inject(DomainPersistenceMappers.Member) mapper: ChatMemberMapper
   ) {
     super(dbModel, domainEventBus, mapper);
   }
@@ -60,7 +60,7 @@ export class ChatMemberRepository
   async countActiveMembersOfChat(chatId: ChatId) {
     const count = await this.dbModel.countDocuments({
       chatId: chatId.value,
-      "status.type": ChatMemberStatusActive.name,
+      "status.type": MemberStatusActive.name,
     });
 
     return count;

@@ -4,7 +4,7 @@ import { Inject } from "@nestjs/common";
 import { Repositories } from "@application/di-tokens/repositories";
 import { UserId } from "@domain/models/user/user";
 import { ChatId } from "@domain/models/chat/chat";
-import { IChatMemberRepo } from "@domain/models/chat-member/chat-member-repo.interface";
+import { IMemberRepo } from "@domain/models/member/member-repo.interface";
 import { ChatDomainService } from "@domain/services/chat";
 import { IChatInvitationRepo } from "@domain/models/chat-invitation/chat-invitation-repo.interface";
 import { InviteToChatCommand } from "./invite-to-chat.command";
@@ -13,8 +13,8 @@ import { InviteToChatCommand } from "./invite-to-chat.command";
 export class InviteToChatService implements ICommandHandler {
   constructor(
     @Inject(Repositories.Chat) private readonly chatRepo: IChatRepo,
-    @Inject(Repositories.ChatMember)
-    private readonly chatMemberRepo: IChatMemberRepo,
+    @Inject(Repositories.Member)
+    private readonly memberRepo: IMemberRepo,
     @Inject(Repositories.ChatInvitation)
     private readonly chatInvitationRepo: IChatInvitationRepo
   ) {}
@@ -30,7 +30,7 @@ export class InviteToChatService implements ICommandHandler {
 
     if (!chat) throw new Error("Chat not found");
 
-    const member = await this.chatMemberRepo.findOneInChatByUserId(
+    const member = await this.memberRepo.findOneInChatByUserId(
       chatId,
       inviterUserId
     );

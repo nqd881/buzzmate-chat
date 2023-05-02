@@ -4,7 +4,7 @@
   "ignore": [
     ".git",
     "node_modules",
-    "dist",
+    "dist/",
     "Dockerfile",
     "Dockerfile.dev",
     ".dockerignore",

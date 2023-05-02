@@ -11,7 +11,7 @@ export class GetUsersController {
 
   @Get()
   @UseGuards(AuthGuard)
-  async getUsers(@Req() req: Request, @Query() queries: GetUsersQuery) {
+  async getUsers(@Query() queries: GetUsersQuery) {
     const { limit, id, email, name } = queries;
 
     const query = new FindUsersQuery({

@@ -31,37 +31,27 @@ export class FileResponseDto {
   date: Date;
 }
 
-export class PhotoSizeResponseDto {
+export class PhotoResponseDto {
+  id: string;
   width: number;
   height: number;
   file: FileResponseDto;
-}
-
-export class PhotoResponseDto {
-  id: string;
-  chatId: string;
-  file: FileResponseDto;
-  //
   url: string;
 }
 
 export class VideoResponseDto {
   id: string;
-  chatId: string;
   width: number;
   height: number;
   duration: number;
   thumbnail: any;
   file: FileResponseDto;
-  //
   url: string;
 }
 
 export class DocumentResponseDto {
   id: string;
-  chatId: string;
   file: FileResponseDto;
-  //
   url: string;
 }
 
@@ -69,14 +59,9 @@ export class MessageResponseDto {
   id: string;
   chatId: string;
   senderUserId: string;
-  // sentByMyself: boolean;
   sentByMember: ChatMemberResponseDto;
   content: {
     text: string;
-    // photoIds: string[];
-    // videoIds: string[];
-    // documentIds: string[];
-
     photos: PhotoResponseDto[];
     videos: VideoResponseDto[];
     documents: DocumentResponseDto[];

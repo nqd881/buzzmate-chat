@@ -1,4 +1,4 @@
-import { ChatMemberCreatedDomainEvent } from "@domain/models/chat-member/events/chat-member-created";
+import { MemberCreatedDomainEvent } from "@domain/models/member/events/member-created";
 import { DomainEventBusService } from "@infrastructure/modules/extra-modules/domain-event-bus/domain-event-bus.service";
 import {
   OnGatewayInit,
@@ -16,8 +16,8 @@ export class ChatMemberCreatedSocketListener implements OnGatewayInit {
 
   afterInit(server: Server) {
     this.domainEventBusService.registerDynamicHandler(
-      ChatMemberCreatedDomainEvent,
-      async (event: ChatMemberCreatedDomainEvent) => {
+      MemberCreatedDomainEvent,
+      async (event: MemberCreatedDomainEvent) => {
         const { chatId, userId } = event;
 
         server.to(userId.value).emit("join_new_chat", chatId.value);

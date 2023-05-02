@@ -1,10 +1,10 @@
-import {ValueObject, ValueObjectProps} from "@libs/ddd";
-import {ChatMemberId} from "../chat-member/chat-member";
+import { ValueObject, ValueObjectProps } from "@libs/ddd";
+import { MemberId } from "../member/member";
 
 export type MessageReactionValue = string;
 
 export interface IMessageReactionProps {
-  chatMemberId: ChatMemberId;
+  memberId: MemberId;
   reactionValue: MessageReactionValue;
 }
 
@@ -15,8 +15,8 @@ export class MessageReaction extends ValueObject<IMessageReactionProps> {
 
   validate() {}
 
-  get chatMemberId() {
-    return this.props.chatMemberId;
+  get memberId() {
+    return this.props.memberId;
   }
 
   get reactionValue() {

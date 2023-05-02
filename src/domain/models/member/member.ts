@@ -1,40 +1,40 @@
 import { AggregateRoot, EntityId } from "@libs/ddd";
 import { ChatId } from "../chat/chat";
 import { UserId } from "../user/user";
-import { ChatMemberStatus } from "./chat-member-status";
-import { ChatMemberStatusActive } from "./chat-member-status/chat-member-status-active";
-import { ChatMemberStatusBanned } from "./chat-member-status/chat-member-status-banned";
-import { ChatMemberStatusLeft } from "./chat-member-status/chat-member-status-left";
-import { ChatMemberCreatedDomainEvent } from "./events/chat-member-created";
-import { ChatMemberStatusChangedDomainEvent } from "./events/chat-member-status-changed";
+import { MemberStatusActive } from "./member-status/member-status-active";
+import { MemberStatusBanned } from "./member-status/member-status-banned";
+import { MemberStatusLeft } from "./member-status/member-status-left";
+import { MemberStatus } from "./member-status";
+import { MemberCreatedDomainEvent } from "./events/member-created";
+import { MemberStatusChangedDomainEvent } from "./events/member-status-changed";
 
-export interface IChatMemberProps {
+export interface IMemberProps {
   chatId: ChatId;
   userId: UserId;
   name: string;
   nickname: string;
   inviterUserId: UserId;
   joinedDate: Date;
-  status: ChatMemberStatus<any>;
+  status: MemberStatus<any>;
 }
 
-export class ChatMemberId extends EntityId {}
+export class MemberId extends EntityId {}
 
-export class ChatMember extends AggregateRoot<ChatMemberId, IChatMemberProps> {
+export class Member extends AggregateRoot<MemberId, IMemberProps> {
   protected _chatId: ChatId;
   protected _userId: UserId;
   protected _name: string;
   protected _nickname: string;
   protected _inviterUserId: UserId;
   protected _joinedDate: Date;
-  protected _status: ChatMemberStatus<any>;
+  protected _status: MemberStatus<any>;
 
-  constructor(props: IChatMemberProps, version: number, id?: ChatMemberId) {
+  constructor(props: IMemberProps, version: number, id?: MemberId) {
     super(props, version, id);
   }
 
   protected get IdConstructor() {
-    return ChatMemberId;
+    return MemberId;
   }
 
   protected init() {
@@ -51,11 +51,11 @@ export class ChatMember extends AggregateRoot<ChatMemberId, IChatMemberProps> {
 
   validate() {}
 
-  static create(props: IChatMemberProps) {
-    const newChatMember = new ChatMember(props, 0);
+  static create(props: IMemberProps) {
+    const newChatMember = new Member(props, 0);
 
     newChatMember.addEvent(
-      new ChatMemberCreatedDomainEvent({
+      new MemberCreatedDomainEvent({
         aggregateId: newChatMember.id,
         memberId: newChatMember.id,
         chatId: newChatMember.chatId,
@@ -96,18 +96,18 @@ export class ChatMember extends AggregateRoot<ChatMemberId, IChatMemberProps> {
   }
 
   isActive() {
-    return this.status.type === ChatMemberStatusActive.name;
+    return this.status.type === MemberStatusActive.name;
   }
 
   isBanned() {
-    return this.status.type === ChatMemberStatusBanned.name;
+    return this.status.type === MemberStatusBanned.name;
   }
 
   hasLeft() {
-    return this.status.type === ChatMemberStatusLeft.name;
+    return this.status.type === MemberStatusLeft.name;
   }
 
-  changeStatus(status: ChatMemberStatus<any>) {
+  changeStatus(status: MemberStatus<any>) {
     if (!this.isActive()) return;
 
     if (this.status.equals(status)) return;
@@ -117,7 +117,7 @@ export class ChatMember extends AggregateRoot<ChatMemberId, IChatMemberProps> {
     });
 
     this.addEvent(
-      new ChatMemberStatusChangedDomainEvent({
+      new MemberStatusChangedDomainEvent({
         aggregateId: this.id,
         memberId: this.id,
         chatId: this.chatId,

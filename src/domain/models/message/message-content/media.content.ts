@@ -10,7 +10,7 @@ export interface IMessageContentAlbumProps {
   documentIds: DocumentId[];
 }
 
-export class MessageContentAlbum extends MessageContent<IMessageContentAlbumProps> {
+export class MessageContentMedia extends MessageContent<IMessageContentAlbumProps> {
   constructor(props: MessageContentProps<IMessageContentAlbumProps>) {
     super(props);
   }
@@ -33,9 +33,9 @@ export class MessageContentAlbum extends MessageContent<IMessageContentAlbumProp
     return this.props.documentIds;
   }
 
-  static isContentAlbum(
+  static isMediaContent(
     content: MessageContent<any>
-  ): content is MessageContentAlbum {
-    return content instanceof MessageContentAlbum;
+  ): content is MessageContentMedia {
+    return content instanceof MessageContentMedia;
   }
 }

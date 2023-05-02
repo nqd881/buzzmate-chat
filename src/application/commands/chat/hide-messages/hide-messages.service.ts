@@ -1,18 +1,18 @@
-import {Repositories} from "@application/di-tokens/repositories";
-import {IChatMemberRepo} from "@domain/models/chat-member/chat-member-repo.interface";
-import {ChatId} from "@domain/models/chat/chat";
-import {MessageId} from "@domain/models/message/message";
-import {IMessageRepo} from "@domain/models/message/message-repo.interface";
-import {UserId} from "@domain/models/user/user";
-import {Inject} from "@nestjs/common";
-import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
-import {HideMessagesCommand} from "./hide-messages.command";
+import { Repositories } from "@application/di-tokens/repositories";
+import { IMemberRepo } from "@domain/models/member/member-repo.interface";
+import { ChatId } from "@domain/models/chat/chat";
+import { MessageId } from "@domain/models/message/message";
+import { IMessageRepo } from "@domain/models/message/message-repo.interface";
+import { UserId } from "@domain/models/user/user";
+import { Inject } from "@nestjs/common";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { HideMessagesCommand } from "./hide-messages.command";
 
 @CommandHandler(HideMessagesCommand)
 export class HideMessagesService implements ICommandHandler {
   constructor(
-    @Inject(Repositories.ChatMember)
-    private readonly chatMemberRepo: IChatMemberRepo,
+    @Inject(Repositories.Member)
+    private readonly memberRepo: IMemberRepo,
     @Inject(Repositories.Message) private readonly messageRepo: IMessageRepo
   ) {}
 
@@ -23,12 +23,9 @@ export class HideMessagesService implements ICommandHandler {
       (messageId) => new MessageId(messageId)
     );
 
-    const chatMember = await this.chatMemberRepo.findOneInChatByUserId(
-      chatId,
-      userId
-    );
+    const member = await this.memberRepo.findOneInChatByUserId(chatId, userId);
 
-    if (!chatMember) throw new Error("ChatMember not found");
+    if (!member) throw new Error("Member not found");
 
     const messages = await this.messageRepo.findManyOfChatById(
       chatId,

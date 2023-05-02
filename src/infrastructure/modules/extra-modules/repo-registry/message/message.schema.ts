@@ -1,11 +1,11 @@
-import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose from "mongoose";
-import {MongoDocBase} from "../mongo-doc-base";
+import { MongoDocBase } from "../mongo-doc-base";
 
-@Schema({_id: false})
+@Schema({ _id: false })
 export class DbMessageReaction {
   @Prop()
-  chatMemberId: string;
+  memberId: string;
 
   @Prop()
   reactionValue: string;
@@ -14,7 +14,7 @@ export class DbMessageReaction {
 export const DbMessageReactionSchema =
   SchemaFactory.createForClass(DbMessageReaction);
 
-@Schema({_id: false})
+@Schema({ _id: false })
 export class DbMessageForwardInfo {
   @Prop()
   fromChatId: string;
@@ -26,7 +26,7 @@ export class DbMessageForwardInfo {
   senderUserId: string;
 }
 
-@Schema({discriminatorKey: "contentType"})
+@Schema({ discriminatorKey: "contentType" })
 export abstract class DbMessageContent {
   @Prop({
     type: String,
@@ -69,7 +69,7 @@ export class DbMessageContentDocument extends DbMessageContent {
 }
 
 @Schema()
-export class DbMessageContentAlbum extends DbMessageContent {
+export class DbMessageContentMedia extends DbMessageContent {
   @Prop()
   caption: string;
 
@@ -87,22 +87,22 @@ export class DbMessageContentAlbum extends DbMessageContent {
   versionKey: false,
 })
 export class DbMessage extends MongoDocBase {
-  @Prop({index: true})
+  @Prop({ index: true })
   chatId: string;
 
   @Prop()
   senderUserId: string;
 
-  @Prop({type: mongoose.SchemaTypes.Mixed})
+  @Prop({ type: mongoose.SchemaTypes.Mixed })
   content: DbMessageContent;
 
-  @Prop({index: true})
+  @Prop({ index: true })
   isPinned: boolean;
 
   @Prop()
   isHidden: boolean;
 
-  @Prop({index: "desc"})
+  @Prop({ index: "desc" })
   date: Date;
 
   @Prop()
@@ -111,10 +111,10 @@ export class DbMessage extends MongoDocBase {
   @Prop()
   replyToMessageId: string;
 
-  @Prop({type: DbMessageForwardInfo})
+  @Prop({ type: DbMessageForwardInfo })
   forwardInfo: DbMessageForwardInfo;
 
-  @Prop({type: [DbMessageReactionSchema]})
+  @Prop({ type: [DbMessageReactionSchema] })
   reactions: DbMessageReaction[];
 }
 

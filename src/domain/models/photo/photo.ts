@@ -1,21 +1,22 @@
-import {AggregateRoot, EntityId} from "@libs/ddd";
-import {ChatId} from "../chat/chat";
-import {PhotoCreatedDomainEvent} from "./events/photo-created";
-import {PhotoVariantsUpdatedDomainEvent} from "./events/photo-variant-updated";
-import {PhotoSize, PhotoSizeType} from "./photo-size";
+import { AggregateRoot, EntityId } from "@libs/ddd";
+import { ChatId } from "../chat/chat";
+import { FileId } from "../file/file";
+import { PhotoCreatedDomainEvent } from "./events/photo-created";
 
 export interface IPhotoProps {
   chatId: ChatId;
-  original: PhotoSize;
-  variants: Map<PhotoSizeType, PhotoSize>;
+  width: number;
+  height: number;
+  fileId: FileId;
 }
 
 export class PhotoId extends EntityId {}
 
 export class Photo extends AggregateRoot<PhotoId, IPhotoProps> {
   protected _chatId: ChatId;
-  protected _original: PhotoSize;
-  protected _variants: Map<PhotoSizeType, PhotoSize>;
+  protected _width: number;
+  protected _height: number;
+  protected _fileId: FileId;
 
   constructor(props: IPhotoProps, version: number, id?: PhotoId) {
     super(props, version, id);
@@ -27,8 +28,9 @@ export class Photo extends AggregateRoot<PhotoId, IPhotoProps> {
 
   protected init() {
     this._chatId = this.props.chatId;
-    this._original = this.props.original;
-    this._variants = this.props.variants || new Map();
+    this._width = this.props.width;
+    this._height = this.props.height;
+    this._fileId = this.props.fileId;
   }
 
   validateProps() {}
@@ -53,24 +55,15 @@ export class Photo extends AggregateRoot<PhotoId, IPhotoProps> {
     return this._chatId;
   }
 
-  get original() {
-    return this._original;
+  get width() {
+    return this._width;
   }
 
-  get variants() {
-    return this._variants;
+  get height() {
+    return this._height;
   }
 
-  updateVariant(sizeType: PhotoSizeType, photoSize: PhotoSize) {
-    this._variants.set(sizeType, photoSize);
-
-    this.addEvent(
-      new PhotoVariantsUpdatedDomainEvent({
-        aggregateId: this.id,
-        photoId: this.id,
-        variantSizeType: sizeType,
-        variantPhotoSize: photoSize,
-      })
-    );
+  get fileId() {
+    return this._fileId;
   }
 }

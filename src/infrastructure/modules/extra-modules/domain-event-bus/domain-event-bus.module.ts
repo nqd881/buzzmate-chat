@@ -1,7 +1,7 @@
-import {DOMAIN_EVENT_BUS} from "@application/di-tokens/domain-event-bus";
-import {Global, Module} from "@nestjs/common";
+import { DOMAIN_EVENT_BUS } from "@application/di-tokens/domain-event-bus";
+import { Global, Module } from "@nestjs/common";
 import EventEmitter2 from "eventemitter2";
-import {DomainEventBusService} from "./domain-event-bus.service";
+import { DomainEventBusService } from "./domain-event-bus.service";
 
 @Global()
 @Module({

@@ -1,18 +1,18 @@
+import { QueryRepositories } from "@application/query-repo/constant";
+import { IUserQueryRepo } from "@application/query-repo/user-query-repo.interface";
+import { Inject } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { FindUsersQuery } from "./find-users.query";
-import { Inject } from "@nestjs/common";
-import { QueryRepositories } from "@application/query-repo/constant";
-import { IChatQueryRepo } from "@application/query-repo/chat-query-repo.interface";
 
 @QueryHandler(FindUsersQuery)
 export class FindUsersService implements IQueryHandler {
-  @Inject(QueryRepositories.Chat) private chatQueryRepo: IChatQueryRepo;
+  @Inject(QueryRepositories.User) private userQueryRepo: IUserQueryRepo;
   constructor() {}
 
   async execute(query: FindUsersQuery) {
     const { limit, byIds, byEmails, byNames } = query;
 
-    return this.chatQueryRepo.getUsers({
+    return this.userQueryRepo.queryUsers({
       limit,
       byIds,
       byEmails,

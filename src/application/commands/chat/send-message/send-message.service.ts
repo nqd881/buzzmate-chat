@@ -1,7 +1,7 @@
 import { Repositories } from "@application/di-tokens/repositories";
 import { Ports } from "@application/ports/constants";
 import { IFileStorageService } from "@application/ports/interface/file-storage";
-import { IChatMemberRepo } from "@domain/models/chat-member/chat-member-repo.interface";
+import { IMemberRepo } from "@domain/models/member/member-repo.interface";
 import { ChatId } from "@domain/models/chat/chat";
 import { IChatRepo } from "@domain/models/chat/chat-repo.interface";
 import { Document } from "@domain/models/document/document";
@@ -13,15 +13,11 @@ import {
   Message,
   MessageId,
 } from "@domain/models/message/message";
-import { MessageContentAlbum } from "@domain/models/message/message-content/album.content";
-import { MessageContentDocument } from "@domain/models/message/message-content/document.content";
-import { MessageContentPhoto } from "@domain/models/message/message-content/photo.content";
+import { MessageContentMedia } from "@domain/models/message/message-content/media.content";
 import { MessageContentText } from "@domain/models/message/message-content/text.content";
-import { MessageContentVideo } from "@domain/models/message/message-content/video.content";
 import { IMessageRepo } from "@domain/models/message/message-repo.interface";
 import { Photo } from "@domain/models/photo/photo";
 import { IPhotoRepo } from "@domain/models/photo/photo-repo.interface";
-import { PhotoSize } from "@domain/models/photo/photo-size";
 import { UserId } from "@domain/models/user/user";
 import { Video } from "@domain/models/video/video";
 import { IVideoRepo } from "@domain/models/video/video-repo.interface";
@@ -34,7 +30,7 @@ export class SendMessageService implements ICommandHandler {
   constructor(
     @Inject(Repositories.Chat) private chatRepo: IChatRepo,
     @Inject(Repositories.Message) private messageRepo: IMessageRepo,
-    @Inject(Repositories.ChatMember) private chatMemberRepo: IChatMemberRepo,
+    @Inject(Repositories.Member) private memberRepo: IMemberRepo,
     @Inject(Repositories.File) private fileRepo: IFileRepo,
     @Inject(Repositories.Photo) private photoRepo: IPhotoRepo,
     @Inject(Repositories.Video) private videoRepo: IVideoRepo,
@@ -55,12 +51,9 @@ export class SendMessageService implements ICommandHandler {
   private createPhoto(prependToSave: any[], file: File, chatId: ChatId) {
     const newPhoto = Photo.create({
       chatId,
-      original: new PhotoSize({
-        width: null,
-        height: null,
-        fileId: file.id,
-      }),
-      variants: null,
+      width: null,
+      height: null,
+      fileId: file.id,
     });
 
     prependToSave.push(async () => this.photoRepo.save(newPhoto));
@@ -105,41 +98,7 @@ export class SendMessageService implements ICommandHandler {
     });
   }
 
-  // private buildContentWithSingleFile(
-  //   prependToSave: any[],
-  //   chatId: ChatId,
-  //   message: string,
-  //   file: File
-  // ) {
-  //   switch (this.getFileType(file)) {
-  //     case "image": {
-  //       const newPhoto = this.createPhoto(prependToSave, file, chatId);
-
-  //       return new MessageContentPhoto({
-  //         caption: message,
-  //         photoId: newPhoto.id,
-  //       });
-  //     }
-  //     case "video": {
-  //       const newVideo = this.createVideo(prependToSave, file, chatId);
-
-  //       return new MessageContentVideo({
-  //         caption: message,
-  //         videoId: newVideo.id,
-  //       });
-  //     }
-  //     default: {
-  //       const newDocument = this.createDocument(prependToSave, file, chatId);
-
-  //       return new MessageContentDocument({
-  //         caption: message,
-  //         documentId: newDocument.id,
-  //       });
-  //     }
-  //   }
-  // }
-
-  private buildContentWithMultiFiles(
+  private buildContentWithFiles(
     prependToSave: any[],
     chatId: ChatId,
     message: string,
@@ -175,7 +134,7 @@ export class SendMessageService implements ICommandHandler {
       }
     });
 
-    return new MessageContentAlbum({
+    return new MessageContentMedia({
       caption: message,
       photoIds,
       videoIds,
@@ -193,16 +152,8 @@ export class SendMessageService implements ICommandHandler {
       case 0: {
         return this.buildContentWithoutFile(message);
       }
-      // case 1: {
-      //   return this.buildContentWithSingleFile(
-      //     prependToSave,
-      //     chatId,
-      //     message,
-      //     files[0]
-      //   );
-      // }
       default: {
-        return this.buildContentWithMultiFiles(
+        return this.buildContentWithFiles(
           prependToSave,
           chatId,
           message,
@@ -253,12 +204,9 @@ export class SendMessageService implements ICommandHandler {
       reactions: [],
     };
 
-    const chatMember = await this.chatMemberRepo.findOneInChatByUserId(
-      chatId,
-      userId
-    );
+    const member = await this.memberRepo.findOneInChatByUserId(chatId, userId);
 
-    if (!chatMember) throw new Error("Chat member not found");
+    if (!member) throw new Error("Chat member not found");
 
     const newMessage = Message.create(messageProps, prepareMessageId);
 

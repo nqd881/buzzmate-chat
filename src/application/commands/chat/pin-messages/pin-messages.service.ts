@@ -1,19 +1,19 @@
-import {Repositories} from "@application/di-tokens/repositories";
-import {MessageId} from "@domain/models/message/message";
-import {UserId} from "@domain/models/user/user";
-import {IChatMemberRepo} from "@domain/models/chat-member/chat-member-repo.interface";
-import {IMessageRepo} from "@domain/models/message/message-repo.interface";
-import {MessageDomainService} from "@domain/services/message";
-import {Inject} from "@nestjs/common";
-import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
-import {PinMessagesCommand} from "./pin-messages.command";
-import {ChatId} from "@domain/models/chat/chat";
+import { Repositories } from "@application/di-tokens/repositories";
+import { MessageId } from "@domain/models/message/message";
+import { UserId } from "@domain/models/user/user";
+import { IMemberRepo } from "@domain/models/member/member-repo.interface";
+import { IMessageRepo } from "@domain/models/message/message-repo.interface";
+import { MessageDomainService } from "@domain/services/message";
+import { Inject } from "@nestjs/common";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { PinMessagesCommand } from "./pin-messages.command";
+import { ChatId } from "@domain/models/chat/chat";
 
 @CommandHandler(PinMessagesCommand)
 export class PinMessagesService implements ICommandHandler {
   constructor(
-    @Inject(Repositories.ChatMember)
-    private readonly chatMemberRepo: IChatMemberRepo,
+    @Inject(Repositories.Member)
+    private readonly memberRepo: IMemberRepo,
     @Inject(Repositories.Message) private readonly messageRepo: IMessageRepo
   ) {}
 
@@ -23,14 +23,11 @@ export class PinMessagesService implements ICommandHandler {
     const messageIds = command.messageIds.map(
       (messageId) => new MessageId(messageId)
     );
-    const {shouldPin} = command;
+    const { shouldPin } = command;
 
-    const chatMember = await this.chatMemberRepo.findOneInChatByUserId(
-      chatId,
-      userId
-    );
+    const member = await this.memberRepo.findOneInChatByUserId(chatId, userId);
 
-    if (!chatMember) throw new Error("Chat member not found");
+    if (!member) throw new Error("Chat member not found");
 
     const messages = await this.messageRepo.findManyOfChatById(
       chatId,

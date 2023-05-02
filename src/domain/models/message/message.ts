@@ -5,12 +5,12 @@ import { MessageReactionAddedDomainEvent } from "@domain/models/message/events/m
 import { MessageReactionsOfMemberClearedDomainEvent } from "@domain/models/message/events/message-reactions-of-member-cleared";
 import { AggregateRoot, EntityId } from "@libs/ddd";
 import { ChatId } from "../chat/chat";
-import { ChatMemberId } from "../chat-member/chat-member";
 import { UserId } from "../user/user";
 import { MessageUnpinnedDomainEvent } from "./events/message-unpined";
 import { MessageContent } from "./message-content";
 import { MessageForwardInfo } from "./message-forward-info";
 import { MessageReaction } from "./message-reaction";
+import { MemberId } from "../member/member";
 
 export interface IMessageProps<T extends MessageContent<any>> {
   chatId: ChatId;
@@ -182,22 +182,22 @@ export class Message<T extends MessageContent<any>> extends AggregateRoot<
         aggregateId: this.id,
         chatId: this.chatId,
         messageId: this.id,
-        chatMemberId: messageReaction.chatMemberId,
+        memberId: messageReaction.memberId,
         reactionValue: messageReaction.reactionValue,
       })
     );
   }
 
-  clearReactionsOfMember(chatMemberId: ChatMemberId) {
+  clearReactionsOfMember(memberId: MemberId) {
     this._reactions = this._reactions.filter(
-      (reaction) => !reaction.chatMemberId.equals(chatMemberId)
+      (reaction) => !reaction.memberId.equals(memberId)
     );
 
     this.addEvent(
       new MessageReactionsOfMemberClearedDomainEvent({
         aggregateId: this.id,
         messageId: this.id,
-        chatMemberId,
+        memberId,
       })
     );
   }

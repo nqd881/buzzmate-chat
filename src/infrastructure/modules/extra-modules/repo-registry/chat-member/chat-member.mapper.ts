@@ -1,12 +1,8 @@
-import {ChatId} from "@domain/models/chat/chat";
-import {
-  ChatMember,
-  ChatMemberId,
-  // ChatMemberStatus,
-} from "@domain/models/chat-member/chat-member";
-import {UserId} from "@domain/models/user/user";
-import {IDomainPersistenceMapper} from "@libs/ddd";
-import {Injectable} from "@nestjs/common";
+import { ChatId } from "@domain/models/chat/chat";
+import { Member, MemberId } from "@domain/models/member/member";
+import { UserId } from "@domain/models/user/user";
+import { IDomainPersistenceMapper } from "@libs/ddd";
+import { Injectable } from "@nestjs/common";
 import {
   DbChatMember,
   DbChatMemberStatus,
@@ -14,36 +10,34 @@ import {
   DbChatMemberStatusBanned,
   DbChatMemberStatusLeft,
 } from "./chat-member.schema";
-import {ChatMemberStatus} from "@domain/models/chat-member/chat-member-status";
-import {ChatMemberStatusActive} from "@domain/models/chat-member/chat-member-status/chat-member-status-active";
-import {ChatMemberStatusLeft} from "@domain/models/chat-member/chat-member-status/chat-member-status-left";
-import {ChatMemberStatusBanned} from "@domain/models/chat-member/chat-member-status/chat-member-status-banned";
+import { MemberStatus } from "@domain/models/member/member-status";
+import { MemberStatusActive } from "@domain/models/member/member-status/member-status-active";
+import { MemberStatusLeft } from "@domain/models/member/member-status/member-status-left";
+import { MemberStatusBanned } from "@domain/models/member/member-status/member-status-banned";
 
 @Injectable()
 export class ChatMemberMapper
-  implements IDomainPersistenceMapper<ChatMember, DbChatMember>
+  implements IDomainPersistenceMapper<Member, DbChatMember>
 {
-  private statusToPersistence(
-    status: ChatMemberStatus<any>
-  ): DbChatMemberStatus {
+  private statusToPersistence(status: MemberStatus<any>): DbChatMemberStatus {
     switch (true) {
-      case status instanceof ChatMemberStatusActive: {
-        const {type} = status as ChatMemberStatusActive;
+      case status instanceof MemberStatusActive: {
+        const { type } = status as MemberStatusActive;
 
         return {
           type,
         } as DbChatMemberStatusActive;
       }
-      case status instanceof ChatMemberStatusLeft: {
-        const {type, leaveDate} = status as ChatMemberStatusLeft;
+      case status instanceof MemberStatusLeft: {
+        const { type, leaveDate } = status as MemberStatusLeft;
 
         return {
           type,
           leaveDate,
         } as DbChatMemberStatusLeft;
       }
-      case status instanceof ChatMemberStatusBanned: {
-        const {type, bannedDate, reason} = status as ChatMemberStatusBanned;
+      case status instanceof MemberStatusBanned: {
+        const { type, bannedDate, reason } = status as MemberStatusBanned;
 
         return {
           type,
@@ -54,24 +48,24 @@ export class ChatMemberMapper
     }
   }
 
-  private statusToDomain(status: DbChatMemberStatus): ChatMemberStatus<any> {
-    const {type} = status;
+  private statusToDomain(status: DbChatMemberStatus): MemberStatus<any> {
+    const { type } = status;
 
     switch (type) {
-      case ChatMemberStatusActive.name: {
-        return new ChatMemberStatusActive(null);
+      case MemberStatusActive.name: {
+        return new MemberStatusActive(null);
       }
-      case ChatMemberStatusLeft.name: {
-        const {leaveDate} = status as DbChatMemberStatusLeft;
+      case MemberStatusLeft.name: {
+        const { leaveDate } = status as DbChatMemberStatusLeft;
 
-        return new ChatMemberStatusLeft({
+        return new MemberStatusLeft({
           leaveDate,
         });
       }
-      case ChatMemberStatusBanned.name: {
-        const {bannedDate, reason} = status as DbChatMemberStatusBanned;
+      case MemberStatusBanned.name: {
+        const { bannedDate, reason } = status as DbChatMemberStatusBanned;
 
-        return new ChatMemberStatusBanned({
+        return new MemberStatusBanned({
           bannedDate,
           reason,
         });
@@ -79,7 +73,7 @@ export class ChatMemberMapper
     }
   }
 
-  toPersistence(entity: ChatMember): DbChatMember {
+  toPersistence(entity: Member): DbChatMember {
     if (!entity) return null;
 
     const {
@@ -107,7 +101,7 @@ export class ChatMemberMapper
     };
   }
 
-  toDomain(dbModel: DbChatMember): ChatMember {
+  toDomain(dbModel: DbChatMember): Member {
     if (!dbModel) return null;
 
     const {
@@ -122,7 +116,7 @@ export class ChatMemberMapper
       __version,
     } = dbModel;
 
-    return new ChatMember(
+    return new Member(
       {
         chatId: new ChatId(chatId),
         userId: new UserId(userId),
@@ -133,7 +127,7 @@ export class ChatMemberMapper
         joinedDate,
       },
       __version,
-      new ChatMemberId(_id)
+      new MemberId(_id)
     );
   }
 }

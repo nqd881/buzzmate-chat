@@ -1,11 +1,11 @@
-import {DOMAIN_EVENT_BUS} from "@application/di-tokens/domain-event-bus";
+import { DOMAIN_EVENT_BUS } from "@application/di-tokens/domain-event-bus";
 import {
   DomainEventClass,
   DomainEventName,
 } from "@domain/utils/domain-event-name";
-import {DomainEvent} from "@libs/ddd";
-import {MaybePromise} from "@libs/utilities/types";
-import {Inject, Injectable} from "@nestjs/common";
+import { DomainEvent } from "@libs/ddd";
+import { MaybePromise } from "@libs/utilities/types";
+import { Inject, Injectable } from "@nestjs/common";
 import EventEmitter2 from "eventemitter2";
 
 export type DynamicDomainEventHandler<T extends DomainEvent<T>> = (

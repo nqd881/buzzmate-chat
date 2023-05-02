@@ -36,7 +36,6 @@ export class GetVideoController {
     const CHUNK_SIZE = 2e6;
 
     const query = new FindVideosQuery({
-      chatId,
       byIds: [videoId],
     });
 

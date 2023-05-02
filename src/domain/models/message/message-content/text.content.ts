@@ -21,7 +21,7 @@ export class MessageContentText extends MessageContent<IMessageContentTextProps>
     return this.props.webPage;
   }
 
-  static isContentText(
+  static isTextContent(
     content: MessageContent<any>
   ): content is MessageContentText {
     return content instanceof MessageContentText;

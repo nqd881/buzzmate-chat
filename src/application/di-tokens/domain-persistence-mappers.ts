@@ -2,7 +2,7 @@ export enum DomainPersistenceMappers {
   User = "user_mapper",
   Chat = "chat_mapper",
   ChatOwner = "chat_owner_mapper",
-  ChatMember = "chat_member_mapper",
+  Member = "chat_member_mapper",
   ChatAdmin = "chat_admin_mapper",
   ChatInvitation = "chat_invitation_mapper",
   Message = "message_mapper",

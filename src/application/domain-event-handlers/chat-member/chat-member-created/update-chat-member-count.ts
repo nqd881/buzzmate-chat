@@ -1,30 +1,30 @@
-import {Repositories} from "@application/di-tokens/repositories";
-import {IChatMemberRepo} from "@domain/models/chat-member/chat-member-repo.interface";
-import {ChatMemberCreatedDomainEvent} from "@domain/models/chat-member/events/chat-member-created";
-import {IChatRepo} from "@domain/models/chat/chat-repo.interface";
-import {DomainEventName} from "@domain/utils/domain-event-name";
-import {Inject} from "@nestjs/common";
-import {OnEvent} from "@nestjs/event-emitter";
+import { Repositories } from "@application/di-tokens/repositories";
+import { IMemberRepo } from "@domain/models/member/member-repo.interface";
+import { IChatRepo } from "@domain/models/chat/chat-repo.interface";
+import { DomainEventName } from "@domain/utils/domain-event-name";
+import { Inject } from "@nestjs/common";
+import { OnEvent } from "@nestjs/event-emitter";
+import { MemberCreatedDomainEvent } from "@domain/models/member/events/member-created";
 
 export class UpdateChatMemberCount {
   constructor(
     @Inject(Repositories.Chat) private readonly chatRepo: IChatRepo,
-    @Inject(Repositories.ChatMember)
-    private readonly chatMemberRepo: IChatMemberRepo
+    @Inject(Repositories.Member)
+    private readonly memberRepo: IMemberRepo
   ) {}
 
-  @OnEvent(DomainEventName(ChatMemberCreatedDomainEvent), {
+  @OnEvent(DomainEventName(MemberCreatedDomainEvent), {
     async: true,
     promisify: true,
   })
-  async update(event: ChatMemberCreatedDomainEvent) {
-    const {chatId} = event;
+  async update(event: MemberCreatedDomainEvent) {
+    const { chatId } = event;
 
     const chat = await this.chatRepo.findOneById(chatId);
 
     if (!chat) throw new Error("Chat not found");
 
-    const newMemberCount = await this.chatMemberRepo.countActiveMembersOfChat(
+    const newMemberCount = await this.memberRepo.countActiveMembersOfChat(
       chatId
     );
 

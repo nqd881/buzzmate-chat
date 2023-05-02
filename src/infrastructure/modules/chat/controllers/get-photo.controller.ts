@@ -15,14 +15,13 @@ export class GetPhotoController {
     private readonly queryBus: QueryBus
   ) {}
 
-  @Get("photos/:photo_id/original")
+  @Get("photos/:photo_id")
   async getPhoto(
     @Res() res: Response,
     @Param("chat_id") chatId: string,
     @Param("photo_id") photoId: string
   ) {
     const query = new FindPhotosQuery({
-      chatId,
       byIds: [photoId],
     });
 

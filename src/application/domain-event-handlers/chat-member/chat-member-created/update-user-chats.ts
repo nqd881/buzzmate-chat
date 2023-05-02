@@ -1,5 +1,5 @@
 import { Repositories } from "@application/di-tokens/repositories";
-import { ChatMemberCreatedDomainEvent } from "@domain/models/chat-member/events/chat-member-created";
+import { MemberCreatedDomainEvent } from "@domain/models/member/events/member-created";
 import { UserChat } from "@domain/models/user/user-chat";
 import { IUserRepo } from "@domain/models/user/user-repo.interface";
 import { DomainEventName } from "@domain/utils/domain-event-name";
@@ -11,11 +11,11 @@ export class UpdateUserChats {
     @Inject(Repositories.User) private readonly userRepo: IUserRepo
   ) {}
 
-  @OnEvent(DomainEventName(ChatMemberCreatedDomainEvent), {
+  @OnEvent(DomainEventName(MemberCreatedDomainEvent), {
     async: true,
     promisify: true,
   })
-  async update(event: ChatMemberCreatedDomainEvent) {
+  async update(event: MemberCreatedDomainEvent) {
     const { userId, chatId } = event;
 
     const user = await this.userRepo.findOneById(userId);

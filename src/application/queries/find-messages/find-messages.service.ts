@@ -1,14 +1,13 @@
-import { IChatQueryRepo } from "@application/query-repo/chat-query-repo.interface";
 import { QueryRepositories } from "@application/query-repo/constant";
 import { Inject } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { FindMessagesQuery } from "./find-messages.query";
-
+import { IMessageQueryRepo } from "@application/query-repo/message-query-repo.interface";
 @QueryHandler(FindMessagesQuery)
 export class FindMessagesService implements IQueryHandler {
   constructor(
-    @Inject(QueryRepositories.Chat)
-    private readonly chatQueryRepo: IChatQueryRepo
+    @Inject(QueryRepositories.Message)
+    private readonly messageQueryRepo: IMessageQueryRepo
   ) {}
 
   async execute(query: FindMessagesQuery) {
@@ -23,7 +22,8 @@ export class FindMessagesService implements IQueryHandler {
       beforeMessageId,
     } = query;
 
-    const messages = await this.chatQueryRepo.getMessages(userId, chatId, {
+    const messages = await this.messageQueryRepo.queryMessages(userId, {
+      chatId,
       limit,
       byIds: ids,
       byTimeEndpoint: {

@@ -1,11 +1,9 @@
-import {EnvNames} from "@infrastructure/env/env.name";
-import {autoDeclare} from "@infrastructure/types/declare";
-import {ValidationPipe} from "@nestjs/common";
-import {ConfigService} from "@nestjs/config";
-import {NestFactory} from "@nestjs/core";
+import { autoDeclare } from "@infrastructure/types/declare";
+import { ValidationPipe } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
 import cookieParser from "cookie-parser";
-import {AppModule} from "./app.module";
-import {SocketAdapter} from "./socket-adapter";
+import { AppModule } from "./app.module";
+import { SocketAdapter } from "./socket-adapter";
 
 autoDeclare();
 
@@ -18,7 +16,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  app.useGlobalPipes(new ValidationPipe({transform: true}));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   app.useWebSocketAdapter(
     new SocketAdapter(app, process.env.SERVER_SOCKET_PORT)

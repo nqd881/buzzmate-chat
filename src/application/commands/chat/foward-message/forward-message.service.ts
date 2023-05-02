@@ -1,7 +1,7 @@
 import { Repositories } from "@application/di-tokens/repositories";
 import { Ports } from "@application/ports/constants";
 import { IFileStorageService } from "@application/ports/interface/file-storage";
-import { IChatMemberRepo } from "@domain/models/chat-member/chat-member-repo.interface";
+import { IMemberRepo } from "@domain/models/member/member-repo.interface";
 import { ChatId } from "@domain/models/chat/chat";
 import { IChatRepo } from "@domain/models/chat/chat-repo.interface";
 import { Document } from "@domain/models/document/document";
@@ -9,7 +9,7 @@ import { IDocumentRepo } from "@domain/models/document/document-repo.interface";
 import { File, FileId } from "@domain/models/file/file";
 import { IFileRepo } from "@domain/models/file/file-repo.interface";
 import { Message, MessageId } from "@domain/models/message/message";
-import { MessageContentAlbum } from "@domain/models/message/message-content/album.content";
+import { MessageContentMedia } from "@domain/models/message/message-content/media.content";
 import { MessageContentText } from "@domain/models/message/message-content/text.content";
 import { MessageForwardInfo } from "@domain/models/message/message-forward-info";
 import { IMessageRepo } from "@domain/models/message/message-repo.interface";
@@ -32,8 +32,8 @@ export class ForwardMessageService implements ICommandHandler {
 
     @Inject(Repositories.Message) private readonly messageRepo: IMessageRepo,
     @Inject(Repositories.Chat) private readonly chatRepo: IChatRepo,
-    @Inject(Repositories.ChatMember)
-    private readonly chatMemberRepo: IChatMemberRepo,
+    @Inject(Repositories.Member)
+    private readonly memberRepo: IMemberRepo,
 
     @Inject(Ports.FileStorageService)
     private readonly fileStorageService: IFileStorageService
@@ -45,33 +45,33 @@ export class ForwardMessageService implements ICommandHandler {
     const toChatId = new ChatId(command.toChatId);
     const messageId = new MessageId(command.messageId);
 
-    const rootChatMember = await this.chatMemberRepo.findOneInChatByUserId(
+    const rootChatMember = await this.memberRepo.findOneInChatByUserId(
       fromChatId,
       userId
     );
 
     if (!rootChatMember) throw new Error("Root chat member not found");
 
-    const [chat, chatMember] = await Promise.all([
+    const [chat, member] = await Promise.all([
       this.chatRepo.findOneById(toChatId),
-      this.chatMemberRepo.findOneInChatByUserId(toChatId, userId),
+      this.memberRepo.findOneInChatByUserId(toChatId, userId),
     ]);
 
     if (!chat) throw new Error("Chat not found");
 
-    if (!chatMember) throw new Error("Chat member not found");
+    if (!member) throw new Error("Chat member not found");
 
     const message = await this.messageRepo.findOneById(messageId);
 
-    const photoIds = MessageContentAlbum.isContentAlbum(message.content)
+    const photoIds = MessageContentMedia.isMediaContent(message.content)
       ? message.content?.photoIds ?? []
       : [];
 
-    const videoIds = MessageContentAlbum.isContentAlbum(message.content)
+    const videoIds = MessageContentMedia.isMediaContent(message.content)
       ? message.content?.videoIds ?? []
       : [];
 
-    const documentIds = MessageContentAlbum.isContentAlbum(message.content)
+    const documentIds = MessageContentMedia.isMediaContent(message.content)
       ? message.content?.documentIds ?? []
       : [];
 
@@ -82,7 +82,7 @@ export class ForwardMessageService implements ICommandHandler {
     ]);
 
     const getPhotoFileIds = (photos: Photo[]) =>
-      photos.map((photo) => photo.original.fileId);
+      photos.map((photo) => photo.fileId);
 
     const getVideoFileIds = (videos: Video[]) =>
       videos.map((video) => video.fileId);
@@ -114,7 +114,7 @@ export class ForwardMessageService implements ICommandHandler {
     };
 
     const forwardPhotos = photos.map((photo) => {
-      const photoFileId = photo.original.fileId;
+      const photoFileId = photo.fileId;
 
       const photoFile = getFile(photoFileId);
 
@@ -127,7 +127,7 @@ export class ForwardMessageService implements ICommandHandler {
       return Photo.create({
         ...photoProps,
         chatId: toChatId,
-        original: photoProps.original.cloneWith({ fileId: newForwardFile.id }),
+        fileId: newForwardFile.id,
       });
     });
 
@@ -171,11 +171,11 @@ export class ForwardMessageService implements ICommandHandler {
       const messageContent = message.content;
 
       switch (true) {
-        case MessageContentText.isContentText(messageContent): {
+        case MessageContentText.isTextContent(messageContent): {
           return new MessageContentText(messageContent.clone());
         }
-        case MessageContentAlbum.isContentAlbum(messageContent): {
-          return new MessageContentAlbum(
+        case MessageContentMedia.isMediaContent(messageContent): {
+          return new MessageContentMedia(
             messageContent.cloneWith({
               photoIds: forwardPhotos.map((photo) => photo.id),
               videoIds: forwardVideos.map((video) => video.id),
@@ -188,7 +188,7 @@ export class ForwardMessageService implements ICommandHandler {
 
     const newMessage = Message.create({
       chatId: chat.id,
-      senderUserId: chatMember.userId,
+      senderUserId: member.userId,
       content,
       isPinned: false,
       isHidden: false,

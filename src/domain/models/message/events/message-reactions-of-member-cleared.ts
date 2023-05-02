@@ -1,10 +1,10 @@
-import {ChatMemberId} from "@domain/models/chat-member/chat-member";
-import {MessageId} from "@domain/models/message/message";
-import {DomainEvent, DomainEventProps} from "@libs/ddd";
+import { MemberId } from "@domain/models/member/member";
+import { MessageId } from "@domain/models/message/message";
+import { DomainEvent, DomainEventProps } from "@libs/ddd";
 
 export class MessageReactionsOfMemberClearedDomainEvent extends DomainEvent<MessageReactionsOfMemberClearedDomainEvent> {
   public readonly messageId: MessageId;
-  public readonly chatMemberId: ChatMemberId;
+  public readonly memberId: MemberId;
 
   constructor(
     props: DomainEventProps<MessageReactionsOfMemberClearedDomainEvent>
@@ -12,6 +12,6 @@ export class MessageReactionsOfMemberClearedDomainEvent extends DomainEvent<Mess
     super(props);
 
     this.messageId = props.messageId;
-    this.chatMemberId = props.chatMemberId;
+    this.memberId = props.memberId;
   }
 }

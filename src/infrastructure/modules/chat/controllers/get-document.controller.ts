@@ -18,26 +18,25 @@ export class GetDocumentController {
 
   @Get(":document_id")
   @UseGuards(AuthGuard)
-  async getPhoto(
+  async getDocument(
     @Res() res: Response,
     @Param("chat_id") chatId: string,
     @Param("document_id") documentId: string
   ) {
     const query = new FindDocumentsQuery({
-      chatId,
       byIds: [documentId],
     });
 
     try {
       const result = await this.queryBus.execute(query);
 
-      const video = result?.[0];
+      const document = result?.[0];
 
-      if (!video) return;
+      if (!document) return;
 
       const readStream = this.fileStorageService.getChatFileReadStream(
         new ChatId(chatId),
-        new FileId(video.file.id)
+        new FileId(document.file.id)
       );
 
       readStream.on("error", () => {

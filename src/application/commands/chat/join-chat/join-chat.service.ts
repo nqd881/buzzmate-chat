@@ -1,7 +1,7 @@
 import { Repositories } from "@application/di-tokens/repositories";
 import { ChatId } from "@domain/models/chat/chat";
 import { UserId } from "@domain/models/user/user";
-import { IChatMemberRepo } from "@domain/models/chat-member/chat-member-repo.interface";
+import { IMemberRepo } from "@domain/models/member/member-repo.interface";
 import { IChatRepo } from "@domain/models/chat/chat-repo.interface";
 import { ChatDomainService } from "@domain/services/chat";
 import { Inject } from "@nestjs/common";
@@ -14,8 +14,8 @@ export class JoinChatService implements ICommandHandler {
   constructor(
     @Inject(Repositories.User) private readonly userRepo: IUserRepo,
     @Inject(Repositories.Chat) private readonly chatRepo: IChatRepo,
-    @Inject(Repositories.ChatMember)
-    private readonly chatMemberRepo: IChatMemberRepo
+    @Inject(Repositories.Member)
+    private readonly memberRepo: IMemberRepo
   ) {}
 
   async execute(command: JoinChatCommand) {
@@ -33,7 +33,7 @@ export class JoinChatService implements ICommandHandler {
 
     const newMember = ChatDomainService.joinChat(chat, user, key);
 
-    await this.chatMemberRepo.save(newMember);
+    await this.memberRepo.save(newMember);
 
     return newMember;
   }

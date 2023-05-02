@@ -1,8 +1,8 @@
 import { Repositories } from "@application/di-tokens/repositories";
 import { ChatAdmin } from "@domain/models/chat-admin/chat-admin";
 import { IChatAdminRepo } from "@domain/models/chat-admin/chat-admin-repo.interface";
-import { ChatMemberId } from "@domain/models/chat-member/chat-member";
-import { IChatMemberRepo } from "@domain/models/chat-member/chat-member-repo.interface";
+import { MemberId } from "@domain/models/member/member";
+import { IMemberRepo } from "@domain/models/member/member-repo.interface";
 import { ChatId } from "@domain/models/chat/chat";
 import { UserId } from "@domain/models/user/user";
 import { Inject } from "@nestjs/common";
@@ -14,18 +14,18 @@ export class PromoteMemberService implements ICommandHandler {
   constructor(
     @Inject(Repositories.ChatAdmin)
     private readonly chatAdminRepo: IChatAdminRepo,
-    @Inject(Repositories.ChatMember)
-    private readonly chatMemberRepo: IChatMemberRepo
+    @Inject(Repositories.Member)
+    private readonly memberRepo: IMemberRepo
   ) {}
 
   async execute(command: PromoteMemberCommand) {
     const adminUserId = new UserId(command.metadata.userId);
     const chatId = new ChatId(command.chatId);
-    const memberId = new ChatMemberId(command.memberId);
+    const memberId = new MemberId(command.memberId);
 
     const [admin, member] = await Promise.all([
       this.chatAdminRepo.findOneInChatByUserId(chatId, adminUserId),
-      this.chatMemberRepo.findOneById(memberId),
+      this.memberRepo.findOneById(memberId),
     ]);
 
     if (!admin) throw new Error("Admin not found");

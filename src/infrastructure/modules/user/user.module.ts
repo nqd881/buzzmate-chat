@@ -9,6 +9,7 @@ import { MessagingService } from "./services/messaging.service";
 import { GetUsersController } from "./controllers/get-users.controller";
 import { FindUsersService } from "@application/queries/find-users/find-users.service";
 import { ChatQueryRepoModule } from "../extra-modules/query-repo/chat-query-repo/chat-query-repo.module";
+import { QueryRepoModule } from "../extra-modules/query-repo/query-repo.module";
 
 export const commandHandlers: Provider[] = [
   CreateUserService,
@@ -21,7 +22,7 @@ export const eventHandlers: Provider[] = UserDomainEventHandlers;
 export const controllers = [GetUsersController];
 
 @Module({
-  imports: [CqrsModule, RepoRegistryModule, ChatQueryRepoModule],
+  imports: [CqrsModule, RepoRegistryModule, QueryRepoModule],
   controllers: [...controllers],
   providers: [...commandHandlers, ...eventHandlers, MessagingService],
   exports: [...commandHandlers],

@@ -2,12 +2,12 @@ import { Repositories } from "@application/di-tokens/repositories";
 import { ChatAdmin } from "@domain/models/chat-admin/chat-admin";
 import { IChatAdminRepo } from "@domain/models/chat-admin/chat-admin-repo.interface";
 import {
-  ChatMember,
+  Member,
   // ChatMemberStatus,
-} from "@domain/models/chat-member/chat-member";
-import { IChatMemberRepo } from "@domain/models/chat-member/chat-member-repo.interface";
-import { ChatMemberStatusActive } from "@domain/models/chat-member/chat-member-status/chat-member-status-active";
-import { ChatMemberStatusLeft } from "@domain/models/chat-member/chat-member-status/chat-member-status-left";
+} from "@domain/models/member/member";
+import { IMemberRepo } from "@domain/models/member/member-repo.interface";
+import { MemberStatusActive } from "@domain/models/member/member-status/member-status-active";
+import { MemberStatusLeft } from "@domain/models/member/member-status/member-status-left";
 import { IChatOwnerRepo } from "@domain/models/chat-owner/chat-owner-repo.interface";
 import { IChatRepo } from "@domain/models/chat/chat-repo.interface";
 import { ChatCreatedDomainEvent } from "@domain/models/chat/events/chat-created";
@@ -30,7 +30,7 @@ export class CreateChatService implements ICommandHandler {
     @Inject(Repositories.User) private userRepo: IUserRepo,
     @Inject(Repositories.Chat) private chatRepo: IChatRepo,
     @Inject(Repositories.ChatOwner) private chatOwnerRepo: IChatOwnerRepo,
-    @Inject(Repositories.ChatMember) private chatMemberRepo: IChatMemberRepo,
+    @Inject(Repositories.Member) private memberRepo: IMemberRepo,
     @Inject(Repositories.ChatAdmin) private chatAdminRepo: IChatAdminRepo,
     private readonly domainEventBusService: DomainEventBusService
   ) {}
@@ -83,18 +83,18 @@ export class CreateChatService implements ICommandHandler {
       if (!newChat.id.equals(chatId)) return;
 
       const members = memberUsers.map((memberUser) =>
-        ChatMember.create({
+        Member.create({
           chatId: newChat.id,
           userId: memberUser.id,
           name: memberUser.name,
           nickname: null,
           joinedDate: new Date(),
           inviterUserId: owner.userId,
-          status: new ChatMemberStatusActive(null),
+          status: new MemberStatusActive(null),
         })
       );
 
-      await this.chatMemberRepo.batchCreate(members);
+      await this.memberRepo.batchCreate(members);
 
       destroyFn();
     };

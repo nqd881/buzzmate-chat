@@ -16,7 +16,7 @@ export class FindChatsService implements IQueryHandler {
 
     const { byIds, limit, fave, archived, returnPersonal } = query;
 
-    const chats = await this.chatQueryRepo.getChats(userId, {
+    const chats = await this.chatQueryRepo.queryChats(userId, {
       byIds,
       limit,
       fave,

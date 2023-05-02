@@ -1,24 +1,5 @@
-import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
-import {MongoDocBase} from "../mongo-doc-base";
-
-@Schema({
-  _id: false,
-})
-export class DbPhotoSize {
-  @Prop()
-  type: string;
-
-  @Prop()
-  width: number;
-
-  @Prop()
-  height: number;
-
-  @Prop()
-  fileId: string;
-}
-
-const DbPhotoSizeSchema = SchemaFactory.createForClass(DbPhotoSize);
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { MongoDocBase } from "../mongo-doc-base";
 
 @Schema({
   versionKey: false,
@@ -28,10 +9,13 @@ export class DbPhoto extends MongoDocBase {
   chatId: string;
 
   @Prop()
-  original: DbPhotoSize;
+  width: number;
 
-  @Prop({type: [DbPhotoSizeSchema]})
-  variants: DbPhotoSize[];
+  @Prop()
+  height: number;
+
+  @Prop()
+  fileId: string;
 }
 
 export const DbPhotoSchema = SchemaFactory.createForClass(DbPhoto);

@@ -2,18 +2,18 @@ import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { FindDocumentsQuery } from "./find-documents.query";
 import { Inject } from "@nestjs/common";
 import { QueryRepositories } from "@application/query-repo/constant";
-import { IChatQueryRepo } from "@application/query-repo/chat-query-repo.interface";
-
+import { IDocumentQueryRepo } from "@application/query-repo/document-query-repo.interface";
 @QueryHandler(FindDocumentsQuery)
 export class FindDocumentsService implements IQueryHandler {
   constructor(
-    @Inject(QueryRepositories.Chat) private chatQueryRepo: IChatQueryRepo
+    @Inject(QueryRepositories.Document)
+    private documentQueryRepo: IDocumentQueryRepo
   ) {}
 
   async execute(query: FindDocumentsQuery) {
-    const { chatId, byIds } = query;
+    const { byIds } = query;
 
-    return this.chatQueryRepo.getPhotos(chatId, {
+    return this.documentQueryRepo.queryDocuments({
       byIds,
     });
   }

@@ -4,19 +4,20 @@ import { Inject } from "@nestjs/common";
 import { QueryRepositories } from "@application/query-repo/constant";
 import { IChatQueryRepo } from "@application/query-repo/chat-query-repo.interface";
 import { VideoResponseDto } from "@application/query-repo/response-dto";
+import { IVideoQueryRepo } from "@application/query-repo/video-query-repo.interface";
 
 @QueryHandler(FindVideosQuery)
 export class FindVideosService
   implements IQueryHandler<FindVideosQuery, VideoResponseDto[]>
 {
   constructor(
-    @Inject(QueryRepositories.Chat) private chatQueryRepo: IChatQueryRepo
+    @Inject(QueryRepositories.Video) private videoQueryRepo: IVideoQueryRepo
   ) {}
 
   async execute(query: FindVideosQuery) {
-    const { chatId, byIds } = query;
+    const { byIds } = query;
 
-    return this.chatQueryRepo.getVideos(chatId, {
+    return this.videoQueryRepo.queryVideos({
       byIds,
     });
   }
