@@ -1,13 +1,12 @@
 import { Repositories } from "@application/di-tokens/repositories";
-import { MessageId } from "@domain/models/message/message";
-import { UserId } from "@domain/models/user/user";
+import { ChatId } from "@domain/models/chat/chat";
 import { IMemberRepo } from "@domain/models/member/member-repo.interface";
+import { MessageId } from "@domain/models/message/message";
 import { IMessageRepo } from "@domain/models/message/message-repo.interface";
-import { MessageDomainService } from "@domain/services/message";
+import { UserId } from "@domain/models/user/user";
 import { Inject } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { PinMessagesCommand } from "./pin-messages.command";
-import { ChatId } from "@domain/models/chat/chat";
 
 @CommandHandler(PinMessagesCommand)
 export class PinMessagesService implements ICommandHandler {

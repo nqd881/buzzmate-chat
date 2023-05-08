@@ -53,16 +53,10 @@ export abstract class AggregateRoot<
     this._isMarked = false;
   }
 
-  protected canUpdate() {
-    return true;
-  }
-
   protected update(updateFn: UpdateFn) {
-    if (this.canUpdate()) {
-      updateFn();
+    updateFn();
 
-      this.mark();
-    }
+    this.mark();
   }
 
   protected addEvent(domainEvent: DomainEvent<any>) {

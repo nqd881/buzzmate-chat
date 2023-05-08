@@ -182,7 +182,6 @@ export class SendMessageService implements ICommandHandler {
         mimetype,
         size,
         date: new Date(),
-        url: null,
       })
     );
 

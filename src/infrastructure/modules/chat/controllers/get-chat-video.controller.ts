@@ -1,5 +1,5 @@
 import { Ports } from "@application/ports/constants";
-import { FindVideosQuery } from "@application/queries/find-videos/find-videos.query";
+import { FindChatVideosQuery } from "@application/queries/find-chat-videos/find-chat-videos.query";
 import { VideoQueryModel } from "@application/query-repo/query-model";
 import { ChatId } from "@domain/models/chat/chat";
 import { FileId } from "@domain/models/file/file";
@@ -17,7 +17,7 @@ import { QueryBus } from "@nestjs/cqrs";
 import { Request, Response } from "express";
 
 @Controller("chats/:chat_id")
-export class GetVideoController {
+export class GetChatVideoController {
   constructor(
     private readonly queryBus: QueryBus,
     @Inject(Ports.FileStorageService)
@@ -25,7 +25,7 @@ export class GetVideoController {
   ) {}
 
   @Get("videos/:video_id")
-  async getPhoto(
+  async getChatVideo(
     @Req() req: Request,
     @Res() res: Response,
     @Param("chat_id") chatId: string,
@@ -35,13 +35,14 @@ export class GetVideoController {
 
     const CHUNK_SIZE = 2e6;
 
-    const query = new FindVideosQuery({
+    const query = new FindChatVideosQuery({
+      chatId,
       byIds: [videoId],
     });
 
     try {
       const result = await this.queryBus.execute<
-        FindVideosQuery,
+        FindChatVideosQuery,
         VideoQueryModel[]
       >(query);
 

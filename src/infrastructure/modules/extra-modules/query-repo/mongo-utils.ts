@@ -8,11 +8,7 @@ const DB_NAME = "test";
 export class MongoUtils {
   constructor(@InjectConnection() private conn: Connection) {}
 
-  getClient() {
-    return this.conn.getClient();
-  }
-
   getCollection(name: string) {
-    return this.getClient().db(DB_NAME).collection(name);
+    return this.conn.getClient().db(DB_NAME).collection(name);
   }
 }

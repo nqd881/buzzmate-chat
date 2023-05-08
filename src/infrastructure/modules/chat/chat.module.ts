@@ -27,11 +27,11 @@ import { EditChatInfoController } from "./controllers/edit-chat-info.controller"
 import { ForwardMessageController } from "./controllers/forward-message.controller";
 import { GetChatController } from "./controllers/get-chat.controller";
 import { GetChatsController } from "./controllers/get-chats.controller";
-import { GetDocumentController } from "./controllers/get-document.controller";
+import { GetChatDocumentController } from "./controllers/get-chat-document.controller";
 import { GetMessageController } from "./controllers/get-message.controller";
 import { GetMessagesController } from "./controllers/get-messages.controller";
-import { GetPhotoController } from "./controllers/get-photo.controller";
-import { GetVideoController } from "./controllers/get-video.controller";
+import { GetChatPhotoController } from "./controllers/get-chat-photo.controller";
+import { GetChatVideoController } from "./controllers/get-chat-video.controller";
 import { HideMessageController } from "./controllers/hide-message.controller";
 import { InviteToChatController } from "./controllers/invite-to-chat.controller";
 import { LeaveChatController } from "./controllers/leave-chat.controller";
@@ -45,13 +45,13 @@ import { SendMessageGateway } from "./socket-gateways/send-message.gateway";
 import { DomainEventBusModule } from "../extra-modules/domain-event-bus/domain-event-bus.module";
 import { JoinChatService } from "@application/commands/chat/join-chat/join-chat.service";
 import { JoinChatController } from "./controllers/join-chat.controller";
-import { FindPhotosService } from "@application/queries/find-photos/find-photos.service";
-import { FindVideosService } from "@application/queries/find-videos/find-videos.service";
-import { FindDocumentsService } from "@application/queries/find-documents/find-documents.service";
+import { FindChatPhotosService } from "@application/queries/find-chat-photos/find-chat-photos.service";
+import { FindChatVideosService } from "@application/queries/find-chat-videos/find-chat-videos.service";
 import { GetMembersController } from "./controllers/get-members.controller";
 import { FindMembersService } from "@application/queries/find-members/find-members.service";
 import { SOCKET_DOMAIN_EVENT_LISTENERS } from "./socket-gateways/domain-event-listener";
 import { ForwardMessageService } from "@application/commands/chat/foward-message/forward-message.service";
+import { FindChatDocumentsService } from "@application/queries/find-chat-documents/find-chat-documents.service";
 
 const commandHandlers = [
   CreateChatService,
@@ -73,9 +73,9 @@ const commandHandlers = [
 
   FindMessagesService,
   FindChatsService,
-  FindPhotosService,
-  FindVideosService,
-  FindDocumentsService,
+  FindChatPhotosService,
+  FindChatVideosService,
+  FindChatDocumentsService,
   FindMembersService,
 ];
 
@@ -104,9 +104,9 @@ const httpControllers = [
   LeaveChatController,
   ReplyToInvitationController,
 
-  GetPhotoController,
-  GetVideoController,
-  GetDocumentController,
+  GetChatPhotoController,
+  GetChatVideoController,
+  GetChatDocumentController,
   GetChatsController,
   GetChatController,
   GetMessagesController,

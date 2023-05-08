@@ -1,40 +1,43 @@
 import { Ports } from "@application/ports/constants";
-import { FindPhotosQuery } from "@application/queries/find-photos/find-photos.query";
+import { FindChatDocumentsQuery } from "@application/queries/find-chat-documents/find-chat-documents.query";
 import { ChatId } from "@domain/models/chat/chat";
 import { FileId } from "@domain/models/file/file";
+import { AuthGuard } from "@infrastructure/guards/auth.guard";
 import { FileStorageService } from "@infrastructure/modules/extra-modules/file-storage/file-storage.service";
-import { Controller, Get, Inject, Param, Res } from "@nestjs/common";
+import { Controller, Get, Inject, Param, Res, UseGuards } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { Response } from "express";
 
-@Controller("chats/:chat_id")
-export class GetPhotoController {
+@Controller("chats/:chat_id/documents")
+export class GetChatDocumentController {
   constructor(
+    private readonly queryBus: QueryBus,
     @Inject(Ports.FileStorageService)
-    private fileStorageService: FileStorageService,
-    private readonly queryBus: QueryBus
+    private fileStorageService: FileStorageService
   ) {}
 
-  @Get("photos/:photo_id")
-  async getPhoto(
+  @Get(":document_id")
+  @UseGuards(AuthGuard)
+  async getChatDocument(
     @Res() res: Response,
     @Param("chat_id") chatId: string,
-    @Param("photo_id") photoId: string
+    @Param("document_id") documentId: string
   ) {
-    const query = new FindPhotosQuery({
-      byIds: [photoId],
+    const query = new FindChatDocumentsQuery({
+      chatId,
+      byIds: [documentId],
     });
 
     try {
       const result = await this.queryBus.execute(query);
 
-      const photo = result?.[0];
+      const document = result?.[0];
 
-      if (!photo) return;
+      if (!document) return;
 
       const readStream = this.fileStorageService.getChatFileReadStream(
         new ChatId(chatId),
-        new FileId(photo.file.id)
+        new FileId(document.file.id)
       );
 
       readStream.on("error", () => {

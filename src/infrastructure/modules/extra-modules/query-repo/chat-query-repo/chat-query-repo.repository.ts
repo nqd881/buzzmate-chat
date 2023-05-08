@@ -22,7 +22,7 @@ import AggOps from "../common/aggregation-pipeline.operators";
 import { MongoUtils } from "../mongo-utils";
 import { MessageGeneralPipelines } from "../message-query-repo/message-query-repo.repository";
 
-export const ChatGeneralPipelines = () => [
+export const ChatGeneralPipelines = (chatId: string) => [
   Set({
     id: "$_id",
     isGroupChat: AggOps.Eq("$type", ChatTypes.GROUP),
@@ -36,7 +36,7 @@ export const ChatGeneralPipelines = () => [
     },
     [
       Match(Expr(AggOps.Eq("$_id", "$$lastMessageId"))),
-      ...MessageGeneralPipelines,
+      ...MessageGeneralPipelines(chatId),
     ],
     "__lastMessage"
   ),
@@ -101,7 +101,7 @@ export class ChatQueryRepo implements IChatQueryRepo {
             },
             [
               Match(Expr(AggOps.Eq("$_id", "$$chatId"))),
-              ...ChatGeneralPipelines(),
+              ...ChatGeneralPipelines("$$chatId"),
             ],
             "__chatDetail"
           ),

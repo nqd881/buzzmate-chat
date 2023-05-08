@@ -26,7 +26,7 @@ import { VideoGeneralPipelines } from "../video-query-repo/video-query-repo.repo
 import { DocumentGeneralPipelines } from "../document-query-repo/document-query-repo.repository";
 import { MessageQueryModel } from "@application/query-repo/query-model";
 
-export const MessageGeneralPipelines = [
+export const MessageGeneralPipelines = (chatId: string) => [
   Set({
     id: "$_id",
     "content.text": AggOps.Switch(
@@ -84,9 +84,13 @@ export const MessageGeneralPipelines = [
   Lookup(
     "dbphotos",
     {
+      chatId: "$chatId",
       photoIds: "$content.photoIds",
     },
-    [Match(Expr(AggOps.In("$_id", "$$photoIds"))), ...PhotoGeneralPipelines],
+    [
+      Match(Expr(AggOps.In("$_id", "$$photoIds"))),
+      ...PhotoGeneralPipelines(chatId),
+    ],
     "content.photos"
   ),
   Lookup(
@@ -94,7 +98,10 @@ export const MessageGeneralPipelines = [
     {
       videoIds: "$content.videoIds",
     },
-    [Match(Expr(AggOps.In("$_id", "$$videoIds"))), ...VideoGeneralPipelines],
+    [
+      Match(Expr(AggOps.In("$_id", "$$videoIds"))),
+      ...VideoGeneralPipelines(chatId),
+    ],
     "content.videos"
   ),
   Lookup(
@@ -104,7 +111,7 @@ export const MessageGeneralPipelines = [
     },
     [
       Match(Expr(AggOps.In("$_id", "$$documentIds"))),
-      ...DocumentGeneralPipelines,
+      ...DocumentGeneralPipelines(chatId),
     ],
     "content.documents"
   ),
@@ -319,7 +326,7 @@ export class MessageQueryRepo implements IMessageQueryRepo {
                 ? ByTimeEndpoint()
                 : []),
 
-              ...MessageGeneralPipelines,
+              ...MessageGeneralPipelines(chatId),
               limit ? Limit(limit) : null,
             ],
             "__messages"

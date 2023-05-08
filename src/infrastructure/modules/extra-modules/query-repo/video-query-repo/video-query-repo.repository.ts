@@ -1,6 +1,6 @@
 import {
   IVideoQueryRepo,
-  QueryVideosOptions,
+  QueryChatVideosOptions,
 } from "@application/query-repo/video-query-repo.interface";
 import { Injectable } from "@nestjs/common";
 import { MongoUtils } from "../mongo-utils";
@@ -10,7 +10,7 @@ import { isNil } from "lodash";
 import { VideoQueryModel } from "@application/query-repo/query-model";
 import { HOST } from "../shared";
 
-export const VideoGeneralPipelines = [
+export const VideoGeneralPipelines = (chatId: string) => [
   Lookup(
     "dbfiles",
     {
@@ -33,7 +33,7 @@ export const VideoGeneralPipelines = [
       url: {
         $concat: [
           `http://${HOST}/api/chat-svc/chats/`,
-          "$chatId",
+          chatId,
           "/videos/",
           "$_id",
         ],
@@ -46,15 +46,15 @@ export const VideoGeneralPipelines = [
 export class VideoQueryRepo implements IVideoQueryRepo {
   constructor(private mongoUtils: MongoUtils) {}
 
-  async queryVideos(options?: QueryVideosOptions) {
-    const { byIds } = options;
+  async queryChatVideos(options?: QueryChatVideosOptions) {
+    const { chatId, byIds } = options;
 
     const videos = await this.mongoUtils
       .getCollection("dbvideos")
       .aggregate(
         [
           Match(Expr(AggOps.In("$_id", byIds))),
-          ...VideoGeneralPipelines,
+          ...VideoGeneralPipelines(chatId),
         ].filter((stage) => !isNil(stage))
       )
       .toArray();

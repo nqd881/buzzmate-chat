@@ -1,6 +1,6 @@
 import {
   IPhotoQueryRepo,
-  QueryPhotosOptions,
+  QueryChatPhotosOptions,
 } from "@application/query-repo/photo-query-repo.interface";
 import { MongoUtils } from "../mongo-utils";
 import { PhotoQueryModel } from "@application/query-repo/query-model";
@@ -8,8 +8,9 @@ import { AggOps, Expr, Lookup, Match, Project, Unwind } from "../common";
 import { isNil } from "lodash";
 import { FileGeneralPipelines } from "../file-query-repo/file-query-repo.repository";
 import { HOST } from "../shared";
+import { Injectable } from "@nestjs/common";
 
-export const PhotoGeneralPipelines = [
+export const PhotoGeneralPipelines = (chatId: string) => [
   Lookup(
     "dbfiles",
     {
@@ -29,7 +30,7 @@ export const PhotoGeneralPipelines = [
       url: {
         $concat: [
           `http://${HOST}/api/chat-svc/chats/`,
-          "$chatId",
+          chatId,
           "/photos/",
           "$_id",
         ],
@@ -38,18 +39,19 @@ export const PhotoGeneralPipelines = [
   }),
 ];
 
+@Injectable()
 export class PhotoQueryRepo implements IPhotoQueryRepo {
   constructor(private mongoUtils: MongoUtils) {}
 
-  async queryPhotos(options?: QueryPhotosOptions) {
-    const { byIds } = options;
+  async queryChatPhotos(options?: QueryChatPhotosOptions) {
+    const { chatId, byIds } = options;
 
     const photos = await this.mongoUtils
       .getCollection("dbphotos")
       .aggregate(
         [
           Match(Expr(AggOps.In("$_id", byIds))),
-          ...PhotoGeneralPipelines,
+          ...PhotoGeneralPipelines(chatId),
         ].filter((stage) => !isNil(stage))
       )
       .toArray();

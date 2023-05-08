@@ -1,12 +1,11 @@
-import {AggregateRoot, EntityId} from "@libs/ddd";
-import {FileCreatedDomainEvent} from "./events/file-created";
+import { AggregateRoot, EntityId } from "@libs/ddd";
+import { FileCreatedDomainEvent } from "./events/file-created";
 
 export interface IFileProps {
   name: string;
   size: number;
   mimetype: string;
   date: Date;
-  url: string;
 }
 
 export class FileId extends EntityId {}
@@ -15,7 +14,6 @@ export class File extends AggregateRoot<FileId, IFileProps> {
   protected _name: string;
   protected _mimetype: string;
   protected _size: number;
-  protected _url: string;
   protected _date: Date;
 
   constructor(props: IFileProps, version: number, id?: FileId) {
@@ -30,7 +28,6 @@ export class File extends AggregateRoot<FileId, IFileProps> {
     this._name = this.props.name;
     this._mimetype = this.props.mimetype;
     this._size = this.props.size;
-    this._url = this.props.url;
     this._date = this.props.date;
   }
 
@@ -69,7 +66,12 @@ export class File extends AggregateRoot<FileId, IFileProps> {
     return this._date;
   }
 
-  get url() {
-    return this._url;
+  clone() {
+    return File.create({
+      name: this.name,
+      mimetype: this.mimetype,
+      size: this.size,
+      date: new Date(),
+    });
   }
 }

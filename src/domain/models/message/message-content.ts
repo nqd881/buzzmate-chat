@@ -1,4 +1,4 @@
-import {ValueObject, ValueObjectProps} from "@libs/ddd";
+import { ValueObject, ValueObjectProps } from "@libs/ddd";
 
 export type MessageContentProps<T> = ValueObjectProps<T>;
 

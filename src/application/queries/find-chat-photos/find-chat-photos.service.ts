@@ -2,18 +2,19 @@ import { QueryRepositories } from "@application/query-repo/constant";
 import { IPhotoQueryRepo } from "@application/query-repo/photo-query-repo.interface";
 import { Inject } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
-import { FindPhotosQuery } from "./find-photos.query";
+import { FindChatPhotosQuery } from "./find-chat-photos.query";
 
-@QueryHandler(FindPhotosQuery)
-export class FindPhotosService implements IQueryHandler {
+@QueryHandler(FindChatPhotosQuery)
+export class FindChatPhotosService implements IQueryHandler {
   constructor(
     @Inject(QueryRepositories.Photo) private photoQueryRepo: IPhotoQueryRepo
   ) {}
 
-  async execute(query: FindPhotosQuery) {
-    const { byIds } = query;
+  async execute(query: FindChatPhotosQuery) {
+    const { chatId, byIds } = query;
 
-    return this.photoQueryRepo.queryPhotos({
+    return this.photoQueryRepo.queryChatPhotos({
+      chatId,
       byIds,
     });
   }

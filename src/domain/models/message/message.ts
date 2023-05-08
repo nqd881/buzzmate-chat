@@ -135,7 +135,9 @@ export class Message<T extends MessageContent<any>> extends AggregateRoot<
   pin() {
     if (this.isPinned) return;
 
-    this._isPinned = true;
+    this.update(() => {
+      this._isPinned = true;
+    });
 
     this.addEvent(
       new MessagePinnedDomainEvent({
@@ -149,7 +151,9 @@ export class Message<T extends MessageContent<any>> extends AggregateRoot<
   unpin() {
     if (!this.isPinned) return;
 
-    this._isPinned = false;
+    this.update(() => {
+      this._isPinned = false;
+    });
 
     this.addEvent(
       new MessageUnpinnedDomainEvent({
@@ -163,7 +167,9 @@ export class Message<T extends MessageContent<any>> extends AggregateRoot<
   hide() {
     if (this.isHidden) return;
 
-    this._isHidden = true;
+    this.update(() => {
+      this._isHidden = true;
+    });
 
     this.addEvent(
       new MessageHiddenDomainEvent({
@@ -175,7 +181,9 @@ export class Message<T extends MessageContent<any>> extends AggregateRoot<
   }
 
   addReaction(messageReaction: MessageReaction) {
-    this._reactions.push(messageReaction);
+    this.update(() => {
+      this._reactions.push(messageReaction);
+    });
 
     this.addEvent(
       new MessageReactionAddedDomainEvent({
@@ -189,9 +197,11 @@ export class Message<T extends MessageContent<any>> extends AggregateRoot<
   }
 
   clearReactionsOfMember(memberId: MemberId) {
-    this._reactions = this._reactions.filter(
-      (reaction) => !reaction.memberId.equals(memberId)
-    );
+    this.update(() => {
+      this._reactions = this._reactions.filter(
+        (reaction) => !reaction.memberId.equals(memberId)
+      );
+    });
 
     this.addEvent(
       new MessageReactionsOfMemberClearedDomainEvent({
