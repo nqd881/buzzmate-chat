@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { MongoUtils } from "../mongo-utils";
+import { MongoUtils } from "../shared/mongo-utils";
 import {
   IUserQueryRepo,
   QueryUsersOptions,
 } from "@application/query-repo/user-query-repo.interface";
 import { UserQueryModel } from "@application/query-repo/query-model";
 import { isNil } from "lodash";
-import { HOST } from "../shared";
-import { AggOps, Expr, Match, Project } from "../common";
+import { HOST } from "../shared/constants";
+import { AggOps, Expr, Match, Project } from "../shared/common";
 
 @Injectable()
 export class UserQueryRepo implements IUserQueryRepo {

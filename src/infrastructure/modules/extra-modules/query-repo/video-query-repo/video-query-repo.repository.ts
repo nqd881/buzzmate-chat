@@ -1,61 +1,64 @@
+import { VideoQueryModel } from "@application/query-repo/query-model";
 import {
   IVideoQueryRepo,
   QueryChatVideosOptions,
 } from "@application/query-repo/video-query-repo.interface";
-import { Injectable } from "@nestjs/common";
-import { MongoUtils } from "../mongo-utils";
-import { AggOps, Expr, Lookup, Match, Project, Unwind } from "../common";
-import { FileGeneralPipelines } from "../file-query-repo/file-query-repo.repository";
+import { Injectable, OnModuleInit } from "@nestjs/common";
 import { isNil } from "lodash";
-import { VideoQueryModel } from "@application/query-repo/query-model";
-import { HOST } from "../shared";
-
-export const VideoGeneralPipelines = (chatId: string) => [
-  Lookup(
-    "dbfiles",
-    {
-      fileId: "$fileId",
-    },
-    [Match(Expr(AggOps.Eq("$_id", "$$fileId"))), ...FileGeneralPipelines],
-    "__file"
-  ),
-  Unwind("$__file"),
-  Project({
-    Id: false,
-    Include: {
-      width: 1,
-      height: 1,
-      duration: 1,
-    },
-    Fields: {
-      id: "$_id",
-      file: "$__file",
-      url: {
-        $concat: [
-          `http://${HOST}/api/chat-svc/chats/`,
-          chatId,
-          "/videos/",
-          "$_id",
-        ],
-      },
-    },
-  }),
-];
+import {
+  AggOps,
+  Expr,
+  LookupBasic,
+  Match,
+  Project,
+  Unwind,
+} from "../shared/common";
+import { VIEW_COLLECTION_NAMES } from "../shared/constants";
+import { MongoUtils } from "../shared/mongo-utils";
 
 @Injectable()
-export class VideoQueryRepo implements IVideoQueryRepo {
+export class VideoQueryRepo implements IVideoQueryRepo, OnModuleInit {
   constructor(private mongoUtils: MongoUtils) {}
+
+  async onModuleInit() {
+    const collectionName = VIEW_COLLECTION_NAMES.VIDEO;
+
+    const isExisting = await this.mongoUtils.collectionIsExisting(
+      collectionName
+    );
+
+    if (isExisting)
+      await this.mongoUtils.getDb().dropCollection(collectionName);
+
+    await this.mongoUtils.getDb().createCollection(collectionName, {
+      viewOn: "dbvideos",
+      pipeline: [
+        LookupBasic(VIEW_COLLECTION_NAMES.FILE, "fileId", "id", "__file"),
+        Unwind("$__file"),
+        Project({
+          Id: false,
+          Include: {
+            width: 1,
+            height: 1,
+            duration: 1,
+          },
+          Fields: {
+            id: "$_id",
+            file: "$__file",
+            url: "",
+          },
+        }),
+      ],
+    });
+  }
 
   async queryChatVideos(options?: QueryChatVideosOptions) {
     const { chatId, byIds } = options;
 
     const videos = await this.mongoUtils
-      .getCollection("dbvideos")
+      .getCollection(VIEW_COLLECTION_NAMES.VIDEO)
       .aggregate(
-        [
-          Match(Expr(AggOps.In("$_id", byIds))),
-          ...VideoGeneralPipelines(chatId),
-        ].filter((stage) => !isNil(stage))
+        [Match(Expr(AggOps.In("$id", byIds)))].filter((stage) => !isNil(stage))
       )
       .toArray();
 

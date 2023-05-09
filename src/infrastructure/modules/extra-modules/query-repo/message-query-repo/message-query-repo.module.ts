@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { MongoUtils } from "../mongo-utils";
+import { MongoUtils } from "../shared/mongo-utils";
 import { QueryRepositories } from "@application/query-repo/constant";
 import { MessageQueryRepo } from "./message-query-repo.repository";
 
