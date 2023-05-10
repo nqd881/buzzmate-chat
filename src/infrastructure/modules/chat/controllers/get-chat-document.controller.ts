@@ -1,4 +1,5 @@
 import { Ports } from "@application/ports/constants";
+import { ChatFilePath } from "@application/ports/interface/file-storage";
 import { FindChatDocumentsQuery } from "@application/queries/find-chat-documents/find-chat-documents.query";
 import { ChatId } from "@domain/models/chat/chat";
 import { FileId } from "@domain/models/file/file";
@@ -36,8 +37,7 @@ export class GetChatDocumentController {
       if (!document) return;
 
       const readStream = this.fileStorageService.getChatFileReadStream(
-        new ChatId(chatId),
-        new FileId(document.file.id)
+        new ChatFilePath(new ChatId(chatId), new FileId(document.file.id))
       );
 
       readStream.on("error", () => {

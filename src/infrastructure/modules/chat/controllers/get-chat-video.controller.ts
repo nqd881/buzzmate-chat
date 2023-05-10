@@ -1,4 +1,5 @@
 import { Ports } from "@application/ports/constants";
+import { ChatFilePath } from "@application/ports/interface/file-storage";
 import { FindChatVideosQuery } from "@application/queries/find-chat-videos/find-chat-videos.query";
 import { VideoQueryModel } from "@application/query-repo/query-model";
 import { ChatId } from "@domain/models/chat/chat";
@@ -56,8 +57,7 @@ export class GetChatVideoController {
       const end = Math.min(start + CHUNK_SIZE - 1, videoSize - 1);
 
       const readStream = this.fileStorageService.getChatFileReadStream(
-        new ChatId(chatId),
-        new FileId(video.file.id),
+        new ChatFilePath(new ChatId(chatId), new FileId(video.file.id)),
         {
           start,
           end,

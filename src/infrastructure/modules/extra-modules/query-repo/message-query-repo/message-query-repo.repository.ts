@@ -24,6 +24,41 @@ import {
 import { MongoUtils } from "../shared/mongo-utils";
 import { VIEW_COLLECTION_NAMES } from "../shared/constants";
 
+export const SetId = Set({
+  id: "$_id",
+});
+
+export const SetPreContent = Set({
+  "content.text": AggOps.Switch(
+    [
+      {
+        case: AggOps.Eq("$content.contentType", MessageContentText.name),
+        then: "$content.text",
+      },
+      {
+        case: AggOps.Eq("$content.contentType", MessageContentMedia.name),
+        then: "$content.caption",
+      },
+    ],
+    null
+  ),
+  "content.__photoIds": AggOps.Cond(
+    AggOps.Eq("$content.contentType", MessageContentMedia.name),
+    "$content.photoIds",
+    []
+  ),
+  "content.__videoIds": AggOps.Cond(
+    AggOps.Eq("$content.contentType", MessageContentMedia.name),
+    "$content.videoIds",
+    []
+  ),
+  "content.__documentIds": AggOps.Cond(
+    AggOps.Eq("$content.contentType", MessageContentMedia.name),
+    "$content.documentIds",
+    []
+  ),
+});
+
 @Injectable()
 export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
   constructor(private mongoUtils: MongoUtils) {}
@@ -43,6 +78,8 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
       pipeline: [
         Set({
           id: "$_id",
+        }),
+        Set({
           "content.text": AggOps.Switch(
             [
               {
@@ -62,17 +99,17 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
             ],
             null
           ),
-          "content.photoIds": AggOps.Cond(
+          "content.__photoIds": AggOps.Cond(
             AggOps.Eq("$content.contentType", MessageContentMedia.name),
             "$content.photoIds",
             []
           ),
-          "content.videoIds": AggOps.Cond(
+          "content.__videoIds": AggOps.Cond(
             AggOps.Eq("$content.contentType", MessageContentMedia.name),
             "$content.videoIds",
             []
           ),
-          "content.documentIds": AggOps.Cond(
+          "content.__documentIds": AggOps.Cond(
             AggOps.Eq("$content.contentType", MessageContentMedia.name),
             "$content.documentIds",
             []
@@ -102,19 +139,19 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
         }),
         LookupBasic(
           VIEW_COLLECTION_NAMES.PHOTO,
-          "content.photoIds",
+          "content.__photoIds",
           "id",
           "content.photos"
         ),
         LookupBasic(
           VIEW_COLLECTION_NAMES.VIDEO,
-          "content.videoIds",
+          "content.__videoIds",
           "id",
           "content.videos"
         ),
         LookupBasic(
           VIEW_COLLECTION_NAMES.DOCUMENT,
-          "content.documentIds",
+          "content.__documentIds",
           "id",
           "content.documents"
         ),
@@ -124,6 +161,12 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
             id: 1,
             chatId: 1,
             senderUserId: 1,
+            content: {
+              text: 1,
+              photos: 1,
+              videos: 1,
+              documents: 1,
+            },
             date: 1,
             editDate: 1,
             replyToMessageId: 1,
@@ -132,13 +175,6 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
             views: 1,
             reactions: 1,
             sentByMember: 1,
-          },
-          Fields: {
-            "content.text": "$content.text",
-            "content.hasMedia": "$content.hasMedia",
-            "content.photos": "$content.photos",
-            "content.videos": "$content.videos",
-            "content.documents": "$content.documents",
           },
         }),
       ],
@@ -220,7 +256,7 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
             afterMessage: [Match(Expr(AggOps.Eq("$_id", afterMessageId)))],
           }),
           Lookup(
-            "dbmessages",
+            VIEW_COLLECTION_NAMES.MESSAGE,
             {
               beforeTime: { $first: "$beforeMessage.date" },
               afterTime: { $first: "$afterMessage.date" },
@@ -253,7 +289,7 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
         return [
           Match(Expr(AggOps.Eq("$_id", beforeMessageId))),
           Lookup(
-            "dbmessages",
+            VIEW_COLLECTION_NAMES.MESSAGE,
             {
               beforeTime: "$date",
             },
@@ -278,7 +314,7 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
         return [
           Match(Expr(AggOps.Eq("$_id", afterMessageId))),
           Lookup(
-            "dbmessages",
+            VIEW_COLLECTION_NAMES.MESSAGE,
             {
               afterTime: "$date",
             },

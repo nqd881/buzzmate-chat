@@ -1,6 +1,9 @@
 import { Repositories } from "@application/di-tokens/repositories";
 import { Ports } from "@application/ports/constants";
-import { IFileStorageService } from "@application/ports/interface/file-storage";
+import {
+  ChatFilePath,
+  IFileStorageService,
+} from "@application/ports/interface/file-storage";
 import { IMemberRepo } from "@domain/models/member/member-repo.interface";
 import { ChatId } from "@domain/models/chat/chat";
 import { IChatRepo } from "@domain/models/chat/chat-repo.interface";
@@ -220,10 +223,8 @@ export class ForwardMessageService implements ICommandHandler {
 
         pr.push(async () =>
           this.fileStorageService.copyChatFile(
-            fromChatId,
-            new FileId(sourceFileId),
-            toChatId,
-            new FileId(destFileId)
+            new ChatFilePath(fromChatId, new FileId(sourceFileId)),
+            new ChatFilePath(toChatId, new FileId(destFileId))
           )
         );
       });

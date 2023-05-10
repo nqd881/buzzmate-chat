@@ -24,6 +24,7 @@ export class MessageCreatedSocketListener implements OnGatewayInit {
       MessageCreatedDomainEvent,
       async (event: MessageCreatedDomainEvent) => {
         const { messageId, chatId, senderUserId } = event;
+
         const returnMessage = (
           await this.queryBus.execute(
             new FindMessagesQuery({
@@ -35,6 +36,8 @@ export class MessageCreatedSocketListener implements OnGatewayInit {
             })
           )
         )[0];
+
+        console.log(returnMessage);
 
         server.to(chatId.value).emit("message_created", returnMessage);
       }

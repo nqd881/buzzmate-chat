@@ -1,6 +1,9 @@
 import { Repositories } from "@application/di-tokens/repositories";
 import { Ports } from "@application/ports/constants";
-import { IFileStorageService } from "@application/ports/interface/file-storage";
+import {
+  ChatFilePath,
+  IFileStorageService,
+} from "@application/ports/interface/file-storage";
 import { IMemberRepo } from "@domain/models/member/member-repo.interface";
 import { ChatId } from "@domain/models/chat/chat";
 import { IChatRepo } from "@domain/models/chat/chat-repo.interface";
@@ -211,8 +214,7 @@ export class SendMessageService implements ICommandHandler {
     await Promise.all(
       newFiles.map((newFile, index) =>
         this.fileStorageService.saveChatFile(
-          chatId,
-          newFile,
+          new ChatFilePath(chatId, newFile.id),
           files[index].content
         )
       )

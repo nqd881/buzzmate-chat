@@ -1,33 +1,28 @@
-import { IFileStorageService } from "@application/ports/interface/file-storage";
-import { ChatId } from "@domain/models/chat/chat";
-import { File, FileId } from "@domain/models/file/file";
 import {
-  CreateReadStreamOptions,
-  Storage as GCloudStorage,
-} from "@google-cloud/storage";
+  ChatFilePath,
+  IFileStorageService,
+} from "@application/ports/interface/file-storage";
+import { CreateReadStreamOptions } from "@google-cloud/storage";
 import { Injectable } from "@nestjs/common";
 import { GCloudStorageService } from "../gcloud-storage/gcloud-storage.service";
 
 @Injectable()
 export class FileStorageService implements IFileStorageService {
-  constructor(
-    private readonly gcs: GCloudStorage,
-    private readonly gcsService: GCloudStorageService
-  ) {}
+  constructor(private readonly gcsService: GCloudStorageService) {}
 
-  private getChatFilePath(chatId: ChatId, fileId: FileId) {
+  private resolvePath(path: ChatFilePath) {
+    const { chatId, fileId } = path;
+
     return [chatId.value, fileId.value].join("/");
   }
 
   async copyChatFile(
-    sourceChatId: ChatId,
-    sourceFileId: FileId,
-    destChatId: ChatId,
-    destFileId: FileId
+    sourcePath: ChatFilePath,
+    destPath: ChatFilePath
   ): Promise<any> {
-    const sourceFilePath = this.getChatFilePath(sourceChatId, sourceFileId);
+    const sourceFilePath = this.resolvePath(sourcePath);
 
-    const destFilePath = this.getChatFilePath(destChatId, destFileId);
+    const destFilePath = this.resolvePath(destPath);
 
     const sourceFile = this.gcsService.getFile(sourceFilePath);
 
@@ -36,31 +31,19 @@ export class FileStorageService implements IFileStorageService {
     return sourceFile.copy(destFile);
   }
 
-  saveChatFile(chatId: ChatId, file: File, content: Buffer): Promise<void> {
+  saveChatFile(path: ChatFilePath, content: Buffer): Promise<void> {
     return new Promise((resolve, reject) => {
-      const path = this.getChatFilePath(chatId, file.id);
+      const stringPath = this.resolvePath(path);
 
-      const gcsFile = this.gcsService.getFile(path);
+      const gcsFile = this.gcsService.getFile(stringPath);
 
-      const writeStream = gcsFile.createWriteStream({
-        metadata: {
-          contentType: file.mimetype,
-        },
-      });
+      const writeStream = gcsFile.createWriteStream();
 
       writeStream.on("finish", () => {
-        gcsFile.setMetadata({
-          id: file.id.value,
-        });
-
-        console.log("Upload success");
-
         resolve();
       });
 
       writeStream.on("error", (error) => {
-        console.log("Upload error", error);
-
         reject();
       });
 
@@ -69,13 +52,12 @@ export class FileStorageService implements IFileStorageService {
   }
 
   getChatFileReadStream(
-    chatId: ChatId,
-    fileId: FileId,
+    path: ChatFilePath,
     options?: CreateReadStreamOptions
   ): NodeJS.ReadableStream {
-    const path = this.getChatFilePath(chatId, fileId);
+    const stringPath = this.resolvePath(path);
 
-    const gcsFile = this.gcsService.getFile(path);
+    const gcsFile = this.gcsService.getFile(stringPath);
 
     return gcsFile.createReadStream(options);
   }
