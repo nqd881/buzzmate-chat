@@ -23,22 +23,7 @@ export class ChatCreatedSocketListener implements OnGatewayInit {
     this.domainEventBusService.registerDynamicHandler(
       ChatCreatedDomainEvent,
       async (event: ChatCreatedDomainEvent) => {
-        const { chatId, title } = event;
-
-        console.log("New chat created: ", chatId);
-
-        // const { messageId, chatId, senderUserId } = event;
-        // const returnMessage = (
-        //   await this.queryBus.execute(
-        //     new FindMessagesQuery({
-        //       metadata: {
-        //         userId: senderUserId.value,
-        //       },
-        //       chatId: chatId.value,
-        //       ids: [messageId.value],
-        //     })
-        //   )
-        // )[0];
+        const { chatId } = event;
 
         server.to(chatId.value).emit("signal_chat_created");
       }

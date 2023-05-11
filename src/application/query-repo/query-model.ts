@@ -1,4 +1,4 @@
-export class UserQueryModel {
+export interface IUserQueryModel {
   id: string;
   identity: string;
   emailAddress: string;
@@ -6,7 +6,7 @@ export class UserQueryModel {
   type: string;
 }
 
-export class MemberQueryModel {
+export interface IMemberQueryModel {
   id: string;
   chatId: string;
   userId: string;
@@ -22,7 +22,7 @@ export class MemberQueryModel {
   isOwner?: boolean;
 }
 
-export class FileQueryModel {
+export interface IFileQueryModel {
   id: string;
   name: string;
   size: number;
@@ -30,62 +30,66 @@ export class FileQueryModel {
   date: Date;
 }
 
-export class PhotoQueryModel {
+export interface IPhotoQueryModel {
   id: string;
   width: number;
   height: number;
-  file: FileQueryModel;
+  file: IFileQueryModel;
   url: string;
 }
 
-export class VideoQueryModel {
+export interface IVideoQueryModel {
   id: string;
   width: number;
   height: number;
   duration: number;
   thumbnail: any;
-  file: FileQueryModel;
+  file: IFileQueryModel;
   url: string;
 }
 
-export class DocumentQueryModel {
+export interface IDocumentQueryModel {
   id: string;
-  file: FileQueryModel;
+  file: IFileQueryModel;
   url: string;
 }
 
-export class MessageQueryModel {
+export interface IMessageContentQueryModel {
+  text: string;
+  photos: IPhotoQueryModel[];
+  videos: IVideoQueryModel[];
+  documents: IDocumentQueryModel[];
+}
+
+export interface IMessageForwardInfoQueryModel {
+  fromChatId: string;
+  fromMessageId: string;
+  senderUserId: string;
+}
+
+export interface IMessageQueryModel {
   id: string;
   chatId: string;
   senderUserId: string;
-  sentByMember: MemberQueryModel;
-  content: {
-    text: string;
-    photos: PhotoQueryModel[];
-    videos: VideoQueryModel[];
-    documents: DocumentQueryModel[];
-  };
+  sentByMember: IMemberQueryModel;
+  content: IMessageContentQueryModel;
   date: number;
   editDate: number;
   replyToMessageId: string;
-  forwardInfo?: {
-    fromChatId: string;
-    fromMessageId: string;
-    senderUserId: string;
-  };
+  forwardInfo?: IMessageForwardInfoQueryModel;
   seenByUserIds?: string[];
   views?: number;
   reactions?: any;
 }
 
-export class ChatQueryModel {
+export interface IChatQueryModel {
   id: string;
   title: string;
   description: string;
   isGroupChat: boolean;
   isPrivateChat: boolean;
   isSelfChat: boolean;
-  lastMessage: MessageQueryModel;
+  lastMessage: IMessageQueryModel;
   memberCount: number;
   isFave?: boolean;
   isArchived?: boolean;

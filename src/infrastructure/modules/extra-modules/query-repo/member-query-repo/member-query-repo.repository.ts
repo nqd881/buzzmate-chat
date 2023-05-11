@@ -2,7 +2,7 @@ import {
   IMemberQueryRepo,
   QueryMembersOptions,
 } from "@application/query-repo/member-query.repo.interface";
-import { MemberQueryModel } from "@application/query-repo/query-model";
+import { IMemberQueryModel } from "@application/query-repo/query-model";
 import { Injectable } from "@nestjs/common";
 import { isNil } from "lodash";
 import { AggOps, Expr, Match } from "../shared/common";
@@ -27,6 +27,6 @@ export class MemberQueryRepo implements IMemberQueryRepo {
       )
       .toArray();
 
-    return members as MemberQueryModel[];
+    return members as IMemberQueryModel[];
   }
 }

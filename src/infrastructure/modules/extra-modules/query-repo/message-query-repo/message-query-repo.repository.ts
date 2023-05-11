@@ -2,7 +2,7 @@ import {
   IMessageQueryRepo,
   QueryMessagesOptions,
 } from "@application/query-repo/message-query-repo.interface";
-import { MessageQueryModel } from "@application/query-repo/query-model";
+import { IMessageQueryModel } from "@application/query-repo/query-model";
 import { Injectable } from "@nestjs/common";
 import { isNil } from "lodash";
 import {
@@ -19,6 +19,8 @@ import {
 } from "../shared/common";
 import { MongoUtils } from "../shared/mongo-utils";
 import { MessageBasePipeline } from "./pipelines";
+import { plainToClass } from "class-transformer";
+import { MessageQueryModel } from "./model";
 
 @Injectable()
 export class MessageQueryRepo implements IMessageQueryRepo {
@@ -179,7 +181,7 @@ export class MessageQueryRepo implements IMessageQueryRepo {
       }
     };
 
-    const messages = await this.mongoUtils
+    const messages = (await this.mongoUtils
       .getCollection("dbmembers")
       .aggregate(
         [
@@ -218,8 +220,8 @@ export class MessageQueryRepo implements IMessageQueryRepo {
           }),
         ].filter((stage) => !isNil(stage))
       )
-      .toArray();
+      .toArray()) as IMessageQueryModel[];
 
-    return messages as MessageQueryModel[];
+    return messages;
   }
 }

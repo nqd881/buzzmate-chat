@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { VideoQueryModel } from "./query-model";
+import { IVideoQueryModel } from "./query-model";
 
 export type QueryChatVideosOptions = {
   chatId: string;
@@ -11,5 +11,5 @@ export type QueryChatVideosOptions = {
 export interface IVideoQueryRepo {
   queryChatVideos(
     options?: QueryChatVideosOptions
-  ): MaybePromise<VideoQueryModel[]>;
+  ): MaybePromise<IVideoQueryModel[]>;
 }

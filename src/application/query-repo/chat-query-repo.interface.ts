@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { ChatQueryModel } from "./query-model";
+import { IChatQueryModel } from "./query-model";
 
 export type QueryChatsOptions = {
   byIds?: string[];
@@ -13,5 +13,5 @@ export interface IChatQueryRepo {
   queryChats(
     userId: string,
     options?: QueryChatsOptions
-  ): MaybePromise<ChatQueryModel[]>;
+  ): MaybePromise<IChatQueryModel[]>;
 }

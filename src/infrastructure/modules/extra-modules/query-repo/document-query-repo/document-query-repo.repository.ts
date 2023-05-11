@@ -2,7 +2,7 @@ import {
   IDocumentQueryRepo,
   QueryChatDocumentsOptions,
 } from "@application/query-repo/document-query-repo.interface";
-import { DocumentQueryModel } from "@application/query-repo/query-model";
+import { IDocumentQueryModel } from "@application/query-repo/query-model";
 import { Injectable } from "@nestjs/common";
 import { isNil } from "lodash";
 import { AggOps, Expr, Match } from "../shared/common";
@@ -19,12 +19,20 @@ export class DocumentQueryRepo implements IDocumentQueryRepo {
     const documents = await this.mongoUtils
       .getCollection("dbdocuments")
       .aggregate(
-        [Match(Expr(AggOps.In("$id", byIds))), ...DocumentBasePipeline].filter(
-          (stage) => !isNil(stage)
-        )
+        [
+          Match(
+            Expr(
+              AggOps.And([
+                AggOps.Eq("$chatId", chatId),
+                AggOps.In("$_id", byIds),
+              ])
+            )
+          ),
+          ...DocumentBasePipeline,
+        ].filter((stage) => !isNil(stage))
       )
       .toArray();
 
-    return documents as DocumentQueryModel[];
+    return documents as IDocumentQueryModel[];
   }
 }

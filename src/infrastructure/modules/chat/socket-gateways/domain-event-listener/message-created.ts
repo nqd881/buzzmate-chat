@@ -37,8 +37,6 @@ export class MessageCreatedSocketListener implements OnGatewayInit {
           )
         )[0];
 
-        console.log(returnMessage);
-
         server.to(chatId.value).emit("message_created", returnMessage);
       }
     );

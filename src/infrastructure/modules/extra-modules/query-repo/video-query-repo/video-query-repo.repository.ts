@@ -1,4 +1,4 @@
-import { VideoQueryModel } from "@application/query-repo/query-model";
+import { IVideoQueryModel } from "@application/query-repo/query-model";
 import {
   IVideoQueryRepo,
   QueryChatVideosOptions,
@@ -8,6 +8,8 @@ import { isNil } from "lodash";
 import { AggOps, Expr, Match } from "../shared/common";
 import { MongoUtils } from "../shared/mongo-utils";
 import { VideoBasePipeline } from "./pipelines";
+import { plainToInstance } from "class-transformer";
+import { VideoQueryModel } from "./model";
 
 @Injectable()
 export class VideoQueryRepo implements IVideoQueryRepo {
@@ -16,15 +18,23 @@ export class VideoQueryRepo implements IVideoQueryRepo {
   async queryChatVideos(options?: QueryChatVideosOptions) {
     const { chatId, byIds } = options;
 
-    const videos = await this.mongoUtils
+    const videos = (await this.mongoUtils
       .getCollection("dbvideos")
       .aggregate(
-        [Match(Expr(AggOps.In("$id", byIds))), ...VideoBasePipeline].filter(
-          (stage) => !isNil(stage)
-        )
+        [
+          Match(
+            Expr(
+              AggOps.And([
+                AggOps.Eq("$chatId", chatId),
+                AggOps.In("$_id", byIds),
+              ])
+            )
+          ),
+          ...VideoBasePipeline,
+        ].filter((stage) => !isNil(stage))
       )
-      .toArray();
+      .toArray()) as IVideoQueryModel[];
 
-    return videos as VideoQueryModel[];
+    return videos;
   }
 }

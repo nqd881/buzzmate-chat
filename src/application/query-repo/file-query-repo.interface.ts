@@ -1,8 +1,8 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { FileQueryModel } from "./query-model";
+import { IFileQueryModel } from "./query-model";
 
 export type QueryFilesOptions = {};
 
 export interface IFileQueryRepo {
-  queryFiles(options?: QueryFilesOptions): MaybePromise<FileQueryModel[]>;
+  queryFiles(options?: QueryFilesOptions): MaybePromise<IFileQueryModel[]>;
 }

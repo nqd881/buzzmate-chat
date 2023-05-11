@@ -53,6 +53,7 @@ export class SendMessageService implements ICommandHandler {
 
   private createPhoto(prependToSave: any[], file: File, chatId: ChatId) {
     const newPhoto = Photo.create({
+      chatId,
       width: null,
       height: null,
       fileId: file.id,
@@ -65,6 +66,7 @@ export class SendMessageService implements ICommandHandler {
 
   private createVideo(prependToSave: any[], file: File, chatId: ChatId) {
     const newVideo = Video.create({
+      chatId,
       width: null,
       height: null,
       duration: null,
@@ -79,6 +81,7 @@ export class SendMessageService implements ICommandHandler {
 
   private createDocument(prependToSave: any[], file: File, chatId: ChatId) {
     const newDocument = Document.create({
+      chatId,
       fileId: file.id,
     });
 

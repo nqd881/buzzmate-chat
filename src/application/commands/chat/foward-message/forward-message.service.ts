@@ -219,8 +219,6 @@ export class ForwardMessageService implements ICommandHandler {
       const pr = [];
 
       filesMap.forEach((destFileId, sourceFileId) => {
-        console.log(sourceFileId, destFileId);
-
         pr.push(async () =>
           this.fileStorageService.copyChatFile(
             new ChatFilePath(fromChatId, new FileId(sourceFileId)),

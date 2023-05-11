@@ -7,6 +7,7 @@ import { MemberStatusLeft } from "./member-status/member-status-left";
 import { MemberStatus } from "./member-status";
 import { MemberCreatedDomainEvent } from "./events/member-created";
 import { MemberStatusChangedDomainEvent } from "./events/member-status-changed";
+import { IChatResource } from "../interfaces/chat-resource";
 
 export interface IMemberProps {
   chatId: ChatId;
@@ -20,7 +21,10 @@ export interface IMemberProps {
 
 export class MemberId extends EntityId {}
 
-export class Member extends AggregateRoot<MemberId, IMemberProps> {
+export class Member
+  extends AggregateRoot<MemberId, IMemberProps>
+  implements IChatResource
+{
   protected _chatId: ChatId;
   protected _userId: UserId;
   protected _name: string;

@@ -2,8 +2,10 @@ import { AggregateRoot, EntityId } from "@libs/ddd";
 import { ChatId } from "../chat/chat";
 import { FileId } from "../file/file";
 import { PhotoCreatedDomainEvent } from "./events/photo-created";
+import { IChatResource } from "../interfaces/chat-resource";
 
 export interface IPhotoProps {
+  chatId: ChatId;
   width: number;
   height: number;
   fileId: FileId;
@@ -11,7 +13,11 @@ export interface IPhotoProps {
 
 export class PhotoId extends EntityId {}
 
-export class Photo extends AggregateRoot<PhotoId, IPhotoProps> {
+export class Photo
+  extends AggregateRoot<PhotoId, IPhotoProps>
+  implements IChatResource
+{
+  protected _chatId: ChatId;
   protected _width: number;
   protected _height: number;
   protected _fileId: FileId;
@@ -25,6 +31,7 @@ export class Photo extends AggregateRoot<PhotoId, IPhotoProps> {
   }
 
   protected init() {
+    this._chatId = this.props.chatId;
     this._width = this.props.width;
     this._height = this.props.height;
     this._fileId = this.props.fileId;
@@ -40,11 +47,16 @@ export class Photo extends AggregateRoot<PhotoId, IPhotoProps> {
     newPhoto.addEvent(
       new PhotoCreatedDomainEvent({
         aggregateId: newPhoto.id,
+        chatId: newPhoto.chatId,
         photoId: newPhoto.id,
       })
     );
 
     return newPhoto;
+  }
+
+  get chatId() {
+    return this._chatId;
   }
 
   get width() {

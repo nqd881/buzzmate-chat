@@ -6,6 +6,9 @@ import { MongoDocBase } from "../mongo-doc-base";
 })
 export class DbDocument extends MongoDocBase {
   @Prop()
+  chatId: string;
+
+  @Prop()
   fileId: string;
 }
 

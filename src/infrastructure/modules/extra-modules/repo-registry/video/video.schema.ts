@@ -14,6 +14,9 @@ export class DbThumbnail {
 })
 export class DbVideo extends MongoDocBase {
   @Prop()
+  chatId: string;
+
+  @Prop()
   duration: number;
 
   @Prop()

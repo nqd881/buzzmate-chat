@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { PhotoQueryModel } from "./query-model";
+import { IPhotoQueryModel } from "./query-model";
 
 export type QueryChatPhotosOptions = {
   chatId: string;
@@ -11,5 +11,5 @@ export type QueryChatPhotosOptions = {
 export interface IPhotoQueryRepo {
   queryChatPhotos(
     options?: QueryChatPhotosOptions
-  ): MaybePromise<PhotoQueryModel[]>;
+  ): MaybePromise<IPhotoQueryModel[]>;
 }

@@ -11,6 +11,7 @@ import { MessageContent } from "./message-content";
 import { MessageForwardInfo } from "./message-forward-info";
 import { MessageReaction } from "./message-reaction";
 import { MemberId } from "../member/member";
+import { IChatResource } from "../interfaces/chat-resource";
 
 export interface IMessageProps<T extends MessageContent<any>> {
   chatId: ChatId;
@@ -27,10 +28,10 @@ export interface IMessageProps<T extends MessageContent<any>> {
 
 export class MessageId extends EntityId {}
 
-export class Message<T extends MessageContent<any>> extends AggregateRoot<
-  MessageId,
-  IMessageProps<T>
-> {
+export class Message<T extends MessageContent<any>>
+  extends AggregateRoot<MessageId, IMessageProps<T>>
+  implements IChatResource
+{
   protected _chatId: ChatId;
   protected _senderUserId: UserId;
   protected _content: T;

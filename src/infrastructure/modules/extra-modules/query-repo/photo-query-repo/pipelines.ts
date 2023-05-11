@@ -1,5 +1,6 @@
 import { FileBasePipeline } from "../file-query-repo/pipelines";
 import { AggOps, Expr, Lookup, Match, Project, Unwind } from "../shared/common";
+import { HOST } from "../shared/constants";
 
 export const PhotoBasePipeline = [
   Lookup(
@@ -13,12 +14,22 @@ export const PhotoBasePipeline = [
   Unwind("$__file"),
   Project({
     Id: false,
+    Include: {
+      chatId: 1,
+      width: 1,
+      height: 1,
+    },
     Fields: {
       id: "$_id",
-      width: "$width",
-      height: "$height",
       file: "$__file",
-      url: "",
+      url: {
+        $concat: [
+          `http://${HOST}/api/chat-svc/chats/`,
+          "$chatId",
+          "/photos/",
+          "$_id",
+        ],
+      },
     },
   }),
 ];

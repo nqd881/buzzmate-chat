@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { MemberQueryModel } from "./query-model";
+import { IMemberQueryModel } from "./query-model";
 
 export type QueryMembersOptions = {
   chatId: string;
@@ -9,5 +9,7 @@ export type QueryMembersOptions = {
 };
 
 export interface IMemberQueryRepo {
-  queryMembers(options?: QueryMembersOptions): MaybePromise<MemberQueryModel[]>;
+  queryMembers(
+    options?: QueryMembersOptions
+  ): MaybePromise<IMemberQueryModel[]>;
 }

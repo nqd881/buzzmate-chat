@@ -1,19 +1,11 @@
 import { Ports } from "@application/ports/constants";
 import { ChatFilePath } from "@application/ports/interface/file-storage";
 import { FindChatVideosQuery } from "@application/queries/find-chat-videos/find-chat-videos.query";
-import { VideoQueryModel } from "@application/query-repo/query-model";
+import { IVideoQueryModel } from "@application/query-repo/query-model";
 import { ChatId } from "@domain/models/chat/chat";
 import { FileId } from "@domain/models/file/file";
 import { FileStorageService } from "@infrastructure/modules/extra-modules/file-storage/file-storage.service";
-import {
-  Controller,
-  Get,
-  HttpException,
-  Inject,
-  Param,
-  Req,
-  Res,
-} from "@nestjs/common";
+import { Controller, Get, Inject, Param, Req, Res } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { Request, Response } from "express";
 
@@ -44,7 +36,7 @@ export class GetChatVideoController {
     try {
       const result = await this.queryBus.execute<
         FindChatVideosQuery,
-        VideoQueryModel[]
+        IVideoQueryModel[]
       >(query);
 
       const video = result?.[0];

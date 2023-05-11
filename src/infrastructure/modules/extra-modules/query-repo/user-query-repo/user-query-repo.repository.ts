@@ -4,7 +4,7 @@ import {
   IUserQueryRepo,
   QueryUsersOptions,
 } from "@application/query-repo/user-query-repo.interface";
-import { UserQueryModel } from "@application/query-repo/query-model";
+import { IUserQueryModel } from "@application/query-repo/query-model";
 import { isNil } from "lodash";
 import { HOST } from "../shared/constants";
 import { AggOps, Expr, Match, Project } from "../shared/common";
@@ -65,6 +65,6 @@ export class UserQueryRepo implements IUserQueryRepo {
       )
       .toArray();
 
-    return users as UserQueryModel[];
+    return users as IUserQueryModel[];
   }
 }

@@ -1,5 +1,5 @@
 import { MaybePromise } from "@libs/utilities/types";
-import { DocumentQueryModel } from "./query-model";
+import { IDocumentQueryModel } from "./query-model";
 
 export type QueryChatDocumentsOptions = {
   chatId: string;
@@ -11,5 +11,5 @@ export type QueryChatDocumentsOptions = {
 export interface IDocumentQueryRepo {
   queryChatDocuments(
     options?: QueryChatDocumentsOptions
-  ): MaybePromise<DocumentQueryModel[]>;
+  ): MaybePromise<IDocumentQueryModel[]>;
 }

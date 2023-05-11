@@ -4,16 +4,19 @@ import { Thumbnail, Video, VideoId } from "@domain/models/video/video";
 import { IDomainPersistenceMapper } from "@libs/ddd";
 import { Injectable } from "@nestjs/common";
 import { DbVideo } from "./video.schema";
+import { ChatId } from "@domain/models/chat/chat";
 
 @Injectable()
 export class VideoMapper implements IDomainPersistenceMapper<Video, DbVideo> {
   toPersistence(entity: Video): DbVideo {
     if (!entity) return null;
 
-    const { id, duration, width, height, thumbnail, fileId, version } = entity;
+    const { id, chatId, duration, width, height, thumbnail, fileId, version } =
+      entity;
 
     return {
       _id: id.value,
+      chatId: chatId.value,
       duration,
       width,
       height,
@@ -28,11 +31,20 @@ export class VideoMapper implements IDomainPersistenceMapper<Video, DbVideo> {
   toDomain(dbModel: DbVideo): Video {
     if (!dbModel) return null;
 
-    const { _id, duration, width, height, thumbnail, fileId, __version } =
-      dbModel;
+    const {
+      _id,
+      chatId,
+      duration,
+      width,
+      height,
+      thumbnail,
+      fileId,
+      __version,
+    } = dbModel;
 
     return new Video(
       {
+        chatId: new ChatId(chatId),
         duration,
         width,
         height,

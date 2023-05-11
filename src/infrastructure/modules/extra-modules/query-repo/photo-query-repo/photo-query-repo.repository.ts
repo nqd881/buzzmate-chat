@@ -2,7 +2,7 @@ import {
   IPhotoQueryRepo,
   QueryChatPhotosOptions,
 } from "@application/query-repo/photo-query-repo.interface";
-import { PhotoQueryModel } from "@application/query-repo/query-model";
+import { IPhotoQueryModel } from "@application/query-repo/query-model";
 import { Injectable } from "@nestjs/common";
 import { isNil } from "lodash";
 import { AggOps, Expr, Match } from "../shared/common";
@@ -19,12 +19,22 @@ export class PhotoQueryRepo implements IPhotoQueryRepo {
     const photos = await this.mongoUtils
       .getCollection("dbphotos")
       .aggregate(
-        [Match(Expr(AggOps.In("$id", byIds))), ...PhotoBasePipeline].filter(
-          (stage) => !isNil(stage)
-        )
+        [
+          Match(
+            Expr(
+              AggOps.And([
+                AggOps.Eq("$chatId", chatId),
+                AggOps.In("$_id", byIds),
+              ])
+            )
+          ),
+          ...PhotoBasePipeline,
+        ].filter((stage) => !isNil(stage))
       )
       .toArray();
 
-    return photos as PhotoQueryModel[];
+    console.log(photos);
+
+    return photos as IPhotoQueryModel[];
   }
 }
