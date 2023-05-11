@@ -3,75 +3,26 @@ import {
   QueryChatsOptions,
 } from "@application/query-repo/chat-query-repo.interface";
 import { ChatQueryModel } from "@application/query-repo/query-model";
-import { ChatTypes } from "@domain/models/chat/chat";
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { isNil } from "lodash";
 import {
   Expr,
   Limit,
-  LookupBasic,
+  Lookup,
   Match,
   Project,
   ROOT,
   ReplaceRoot,
-  Set,
   Unset,
   Unwind,
 } from "../shared/common";
 import AggOps from "../shared/common/aggregation-pipeline.operators";
-import { VIEW_COLLECTION_NAMES } from "../shared/constants";
 import { MongoUtils } from "../shared/mongo-utils";
+import { ChatBasePipeline } from "./pipelines";
 
 @Injectable()
-export class ChatQueryRepo implements IChatQueryRepo, OnModuleInit {
+export class ChatQueryRepo implements IChatQueryRepo {
   constructor(private mongoUtils: MongoUtils) {}
-
-  async onModuleInit() {
-    const collectionName = VIEW_COLLECTION_NAMES.CHAT;
-
-    const isExisting = await this.mongoUtils.collectionIsExisting(
-      collectionName
-    );
-
-    if (isExisting)
-      await this.mongoUtils.getDb().dropCollection(collectionName);
-
-    await this.mongoUtils.getDb().createCollection(collectionName, {
-      viewOn: "dbchats",
-      pipeline: [
-        Set({
-          id: "$_id",
-          isGroupChat: AggOps.Eq("$type", ChatTypes.GROUP),
-          isPrivateChat: AggOps.Eq("$type", ChatTypes.PRIVATE),
-          isSelfChat: AggOps.Eq("$type", ChatTypes.SELF),
-        }),
-        LookupBasic(
-          VIEW_COLLECTION_NAMES.MESSAGE,
-          "lastMessageId",
-          "id",
-          "__lastMessage"
-        ),
-        Unwind("$__lastMessage", true),
-        Set({
-          lastMessage: AggOps.IfNull("$__lastMessage", null),
-        }),
-        Project({
-          Id: false,
-          Include: {
-            id: 1,
-            title: 1,
-            description: 1,
-            type: 1,
-            memberCount: 1,
-            lastMessage: 1,
-            isGroupChat: 1,
-            isPrivateChat: 1,
-            isSelfChat: 1,
-          },
-        }),
-      ],
-    });
-  }
 
   async queryChats(
     userId: string,
@@ -104,18 +55,22 @@ export class ChatQueryRepo implements IChatQueryRepo, OnModuleInit {
               ? Expr(AggOps.Eq("$isArchived", options.archived))
               : {}
           ),
-          LookupBasic(
-            VIEW_COLLECTION_NAMES.CHAT,
-            "chatId",
-            "id",
+          Lookup(
+            "dbchats",
+            {
+              chatId: "$chatId",
+            },
+            [Match(Expr(AggOps.Eq("$_id", "$$chatId"))), ...ChatBasePipeline],
             "__chatDetail"
           ),
           Unwind("$__chatDetail"),
           ReplaceRoot(AggOps.MergeObjects([ROOT, "$__chatDetail"])),
           Unset("__chatDetail"),
           Project({
+            Fields: {
+              id: "$chatId",
+            },
             Include: {
-              id: 1,
               title: 1,
               description: 1,
               isGroupChat: 1,

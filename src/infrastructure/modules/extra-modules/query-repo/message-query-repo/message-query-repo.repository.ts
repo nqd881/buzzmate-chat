@@ -3,9 +3,7 @@ import {
   QueryMessagesOptions,
 } from "@application/query-repo/message-query-repo.interface";
 import { MessageQueryModel } from "@application/query-repo/query-model";
-import { MessageContentMedia } from "@domain/models/message/message-content/media.content";
-import { MessageContentText } from "@domain/models/message/message-content/text.content";
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { isNil } from "lodash";
 import {
   AggOps,
@@ -13,173 +11,18 @@ import {
   Facet,
   Limit,
   Lookup,
-  LookupBasic,
   Match,
-  Project,
   ReplaceRoot,
   Set,
   Sort,
   Unwind,
 } from "../shared/common";
 import { MongoUtils } from "../shared/mongo-utils";
-import { VIEW_COLLECTION_NAMES } from "../shared/constants";
-
-export const SetId = Set({
-  id: "$_id",
-});
-
-export const SetPreContent = Set({
-  "content.text": AggOps.Switch(
-    [
-      {
-        case: AggOps.Eq("$content.contentType", MessageContentText.name),
-        then: "$content.text",
-      },
-      {
-        case: AggOps.Eq("$content.contentType", MessageContentMedia.name),
-        then: "$content.caption",
-      },
-    ],
-    null
-  ),
-  "content.__photoIds": AggOps.Cond(
-    AggOps.Eq("$content.contentType", MessageContentMedia.name),
-    "$content.photoIds",
-    []
-  ),
-  "content.__videoIds": AggOps.Cond(
-    AggOps.Eq("$content.contentType", MessageContentMedia.name),
-    "$content.videoIds",
-    []
-  ),
-  "content.__documentIds": AggOps.Cond(
-    AggOps.Eq("$content.contentType", MessageContentMedia.name),
-    "$content.documentIds",
-    []
-  ),
-});
+import { MessageBasePipeline } from "./pipelines";
 
 @Injectable()
-export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
+export class MessageQueryRepo implements IMessageQueryRepo {
   constructor(private mongoUtils: MongoUtils) {}
-
-  async onModuleInit() {
-    const collectionName = VIEW_COLLECTION_NAMES.MESSAGE;
-
-    const isExisting = await this.mongoUtils.collectionIsExisting(
-      collectionName
-    );
-
-    if (isExisting)
-      await this.mongoUtils.getDb().dropCollection(collectionName);
-
-    await this.mongoUtils.getDb().createCollection(collectionName, {
-      viewOn: "dbmessages",
-      pipeline: [
-        Set({
-          id: "$_id",
-        }),
-        Set({
-          "content.text": AggOps.Switch(
-            [
-              {
-                case: AggOps.Eq(
-                  "$content.contentType",
-                  MessageContentText.name
-                ),
-                then: "$content.text",
-              },
-              {
-                case: AggOps.Eq(
-                  "$content.contentType",
-                  MessageContentMedia.name
-                ),
-                then: "$content.caption",
-              },
-            ],
-            null
-          ),
-          "content.__photoIds": AggOps.Cond(
-            AggOps.Eq("$content.contentType", MessageContentMedia.name),
-            "$content.photoIds",
-            []
-          ),
-          "content.__videoIds": AggOps.Cond(
-            AggOps.Eq("$content.contentType", MessageContentMedia.name),
-            "$content.videoIds",
-            []
-          ),
-          "content.__documentIds": AggOps.Cond(
-            AggOps.Eq("$content.contentType", MessageContentMedia.name),
-            "$content.documentIds",
-            []
-          ),
-        }),
-        Lookup(
-          VIEW_COLLECTION_NAMES.MEMBER,
-          {
-            chatId: "$chatId",
-            senderUserId: "$senderUserId",
-          },
-          [
-            Match(
-              Expr(
-                AggOps.And([
-                  AggOps.Eq("$userId", "$$senderUserId"),
-                  AggOps.Eq("$chatId", "$$chatId"),
-                ])
-              )
-            ),
-          ],
-          "sentByMember"
-        ),
-        Unwind("$sentByMember", true),
-        Set({
-          sentByMember: AggOps.IfNull("$sentByMember", {}),
-        }),
-        LookupBasic(
-          VIEW_COLLECTION_NAMES.PHOTO,
-          "content.__photoIds",
-          "id",
-          "content.photos"
-        ),
-        LookupBasic(
-          VIEW_COLLECTION_NAMES.VIDEO,
-          "content.__videoIds",
-          "id",
-          "content.videos"
-        ),
-        LookupBasic(
-          VIEW_COLLECTION_NAMES.DOCUMENT,
-          "content.__documentIds",
-          "id",
-          "content.documents"
-        ),
-        Project({
-          Id: false,
-          Include: {
-            id: 1,
-            chatId: 1,
-            senderUserId: 1,
-            content: {
-              text: 1,
-              photos: 1,
-              videos: 1,
-              documents: 1,
-            },
-            date: 1,
-            editDate: 1,
-            replyToMessageId: 1,
-            forwardInfo: 1,
-            seemByUserIds: 1,
-            views: 1,
-            reactions: 1,
-            sentByMember: 1,
-          },
-        }),
-      ],
-    });
-  }
 
   async queryMessages(userId: string, options?: QueryMessagesOptions) {
     const { chatId, byIds, byTimeEndpoint, byIdEndpoint, limit } =
@@ -256,7 +99,7 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
             afterMessage: [Match(Expr(AggOps.Eq("$_id", afterMessageId)))],
           }),
           Lookup(
-            VIEW_COLLECTION_NAMES.MESSAGE,
+            "dbmessages",
             {
               beforeTime: { $first: "$beforeMessage.date" },
               afterTime: { $first: "$afterMessage.date" },
@@ -289,7 +132,7 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
         return [
           Match(Expr(AggOps.Eq("$_id", beforeMessageId))),
           Lookup(
-            VIEW_COLLECTION_NAMES.MESSAGE,
+            "dbmessages",
             {
               beforeTime: "$date",
             },
@@ -314,7 +157,7 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
         return [
           Match(Expr(AggOps.Eq("$_id", afterMessageId))),
           Lookup(
-            VIEW_COLLECTION_NAMES.MESSAGE,
+            "dbmessages",
             {
               afterTime: "$date",
             },
@@ -349,7 +192,7 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
             )
           ),
           Lookup(
-            VIEW_COLLECTION_NAMES.MESSAGE,
+            "dbmessages",
             {
               chatId,
             },
@@ -362,6 +205,7 @@ export class MessageQueryRepo implements IMessageQueryRepo, OnModuleInit {
                 : shouldQueryByTimeEndpoint
                 ? ByTimeEndpoint()
                 : []),
+              ...MessageBasePipeline,
               limit ? Limit(limit) : null,
             ],
             "__messages"
