@@ -28,7 +28,7 @@ export class ChatQueryRepo implements IChatQueryRepo {
     userId: string,
     options?: QueryChatsOptions
   ): Promise<IChatQueryModel[]> {
-    const chats = await this.mongoUtils
+    const chats = (await this.mongoUtils
       .getCollection("dbusers")
       .aggregate(
         [
@@ -93,8 +93,8 @@ export class ChatQueryRepo implements IChatQueryRepo {
           Limit(options?.limit ?? 100),
         ].filter((stage) => !isNil(stage))
       )
-      .toArray();
+      .toArray()) as IChatQueryModel[];
 
-    return chats as IChatQueryModel[];
+    return chats;
   }
 }

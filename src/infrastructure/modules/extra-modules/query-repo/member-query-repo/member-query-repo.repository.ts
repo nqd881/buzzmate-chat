@@ -16,7 +16,7 @@ export class MemberQueryRepo implements IMemberQueryRepo {
   async queryMembers(options?: QueryMembersOptions) {
     const { chatId, byIds } = options;
 
-    const members = await this.mongoUtils
+    const members = (await this.mongoUtils
       .getCollection("dbmembers")
       .aggregate(
         [
@@ -25,8 +25,8 @@ export class MemberQueryRepo implements IMemberQueryRepo {
           ...MemberBasePipeline,
         ].filter((stage) => !isNil(stage))
       )
-      .toArray();
+      .toArray()) as IMemberQueryModel[];
 
-    return members as IMemberQueryModel[];
+    return members;
   }
 }

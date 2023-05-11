@@ -16,7 +16,7 @@ export class PhotoQueryRepo implements IPhotoQueryRepo {
   async queryChatPhotos(options?: QueryChatPhotosOptions) {
     const { chatId, byIds } = options;
 
-    const photos = await this.mongoUtils
+    const photos = (await this.mongoUtils
       .getCollection("dbphotos")
       .aggregate(
         [
@@ -31,10 +31,8 @@ export class PhotoQueryRepo implements IPhotoQueryRepo {
           ...PhotoBasePipeline,
         ].filter((stage) => !isNil(stage))
       )
-      .toArray();
+      .toArray()) as IPhotoQueryModel[];
 
-    console.log(photos);
-
-    return photos as IPhotoQueryModel[];
+    return photos;
   }
 }

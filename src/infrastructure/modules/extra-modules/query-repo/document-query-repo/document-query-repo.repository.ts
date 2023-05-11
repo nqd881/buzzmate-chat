@@ -16,7 +16,7 @@ export class DocumentQueryRepo implements IDocumentQueryRepo {
   async queryChatDocuments(options?: QueryChatDocumentsOptions) {
     const { chatId, byIds } = options;
 
-    const documents = await this.mongoUtils
+    const documents = (await this.mongoUtils
       .getCollection("dbdocuments")
       .aggregate(
         [
@@ -31,8 +31,8 @@ export class DocumentQueryRepo implements IDocumentQueryRepo {
           ...DocumentBasePipeline,
         ].filter((stage) => !isNil(stage))
       )
-      .toArray();
+      .toArray()) as IDocumentQueryModel[];
 
-    return documents as IDocumentQueryModel[];
+    return documents;
   }
 }
