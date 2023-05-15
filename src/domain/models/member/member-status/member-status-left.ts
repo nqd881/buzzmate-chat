@@ -1,11 +1,11 @@
-import { MemberStatus, MemberStatusProps } from "../member-status";
+import { MemberStatus } from "../member-status";
 
 export interface MemberStatusLeftProps {
   leaveDate: Date;
 }
 
 export class MemberStatusLeft extends MemberStatus<MemberStatusLeftProps> {
-  constructor(props: MemberStatusProps<MemberStatusLeftProps>) {
+  constructor(props: MemberStatusLeftProps) {
     super(props);
   }
 

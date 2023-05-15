@@ -5,8 +5,5 @@ import { IRepositoryBase } from "@libs/ddd";
 import { MaybePromise } from "@libs/utilities/types";
 
 export interface IChatAdminRepo extends IRepositoryBase<ChatAdmin> {
-  findOneInChatByUserId(
-    chatId: ChatId,
-    userId: UserId
-  ): MaybePromise<ChatAdmin>;
+  findMemberByUserId(chatId: ChatId, userId: UserId): MaybePromise<ChatAdmin>;
 }

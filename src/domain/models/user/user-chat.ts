@@ -1,5 +1,5 @@
-import {ValueObject, ValueObjectProps} from "@libs/ddd";
-import {ChatId} from "../chat/chat";
+import { ValueObject } from "@libs/ddd";
+import { ChatId } from "../chat/chat";
 
 export interface IUserChatProps {
   chatId: ChatId;
@@ -8,7 +8,7 @@ export interface IUserChatProps {
 }
 
 export class UserChat extends ValueObject<IUserChatProps> {
-  constructor(props: ValueObjectProps<IUserChatProps>) {
+  constructor(props: IUserChatProps) {
     super(props);
   }
 

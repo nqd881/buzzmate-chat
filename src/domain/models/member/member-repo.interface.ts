@@ -6,17 +6,16 @@ import { Member, MemberId } from "./member";
 
 export type FindInChatOptions = {
   memberIds?: MemberId[];
+  userIds?: UserId[];
 };
 
 export interface IMemberRepo extends IRepositoryBase<Member> {
-  findInChat(
+  findMembers(
     chatId: ChatId,
     options?: FindInChatOptions
   ): MaybePromise<Member[]>;
 
-  findOneInChatByUserId(chatId: ChatId, userId: UserId): MaybePromise<Member>;
+  findMemberByUserId(chatId: ChatId, userId: UserId): MaybePromise<Member>;
 
-  findManyByUserId(userIds: UserId): MaybePromise<Member[]>;
-
-  countActiveMembersOfChat(chatId: ChatId): MaybePromise<number>;
+  countActiveMembers(chatId: ChatId): MaybePromise<number>;
 }

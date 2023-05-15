@@ -3,9 +3,13 @@ import { ChatDescriptionChangedDomainEvent } from "@domain/models/chat/events/ch
 import { ChatLastMessageIdUpdatedDomainEvent } from "@domain/models/chat/events/chat-last-message-id-updated";
 import { ChatLockedDomainEvent } from "@domain/models/chat/events/chat-locked";
 import { ChatTitleChangedDomainEvent } from "@domain/models/chat/events/chat-title-changed";
-import { AggregateRoot, EntityId } from "@libs/ddd";
+import { AggregateRoot, EntityId, ValueObject } from "@libs/ddd";
 import { ChatOwnerId } from "../chat-owner/chat-owner";
 import { MessageId } from "../message/message";
+import { Photo } from "../photo";
+import { Member } from "../member/member";
+import { ChatPhotoEditedDomainEvent } from "./events/chat-photo-edited";
+import { ChatAdmin } from "../chat-admin/chat-admin";
 
 export enum ChatStatus {
   ACTIVE = "active",
@@ -22,6 +26,7 @@ export interface IChatProps {
   title: string;
   description: string;
   ownerId: ChatOwnerId;
+  photo: Photo;
   lastMessageId: MessageId;
   status: ChatStatus;
   type: ChatTypes;
@@ -31,10 +36,33 @@ export interface IChatProps {
 
 export class ChatId extends EntityId {}
 
+export interface IChatInfoProps {
+  title: string;
+  description: string;
+}
+
+export class ChatInfo extends ValueObject<IChatInfoProps> {
+  constructor(props: IChatInfoProps) {
+    super(props);
+  }
+
+  validate() {}
+
+  get title() {
+    return this.props.title;
+  }
+
+  get description() {
+    return this.props.description;
+  }
+}
+
 export class Chat extends AggregateRoot<ChatId, IChatProps> {
   protected _title: string;
   protected _description: string;
+  // protected _info: ChatInfo
   protected _ownerId: ChatOwnerId;
+  protected _photo: Photo;
   protected _status: ChatStatus;
   protected _lastMessageId: MessageId;
   protected _type: ChatTypes;
@@ -53,6 +81,7 @@ export class Chat extends AggregateRoot<ChatId, IChatProps> {
     this._title = this.props.title;
     this._description = this.props.description;
     this._ownerId = this.props.ownerId;
+    this._photo = this.props.photo;
     this._status = this.props.status;
     this._lastMessageId = this.props.lastMessageId;
     this._type = this.props.type;
@@ -101,6 +130,10 @@ export class Chat extends AggregateRoot<ChatId, IChatProps> {
 
   get ownerId() {
     return this._ownerId;
+  }
+
+  get photo() {
+    return this._photo;
   }
 
   get status() {
@@ -184,6 +217,8 @@ export class Chat extends AggregateRoot<ChatId, IChatProps> {
     );
   }
 
+  editInfo(info: ChatInfo) {}
+
   editTitle(title: string) {
     if (this.title === title) return;
 
@@ -203,7 +238,7 @@ export class Chat extends AggregateRoot<ChatId, IChatProps> {
     );
   }
 
-  editDescription(description: string) {
+  editDescription(editor: Member | ChatAdmin, description: string) {
     if (this.description === description) return;
 
     const oldDescription = this.description;
@@ -218,6 +253,22 @@ export class Chat extends AggregateRoot<ChatId, IChatProps> {
         chatId: this.id,
         oldDescription,
         newDescription: this.description,
+      })
+    );
+  }
+
+  editPhoto(editor: Member, photo: Photo) {
+    if (!editor) throw new Error("Editor cannot be null");
+
+    this.update(() => {
+      this._photo = photo;
+    });
+
+    this.addEvent(
+      new ChatPhotoEditedDomainEvent({
+        aggregateId: this.id,
+        chatId: this.id,
+        editorMemberId: editor.id,
       })
     );
   }

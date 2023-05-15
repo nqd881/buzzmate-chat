@@ -18,11 +18,11 @@ export class LeaveChatService implements ICommandHandler {
     const userId = new UserId(command.metadata.userId);
     const chatId = new ChatId(command.chatId);
 
-    const member = await this.memberRepo.findOneInChatByUserId(chatId, userId);
+    const member = await this.memberRepo.findMemberByUserId(chatId, userId);
 
     if (!member) throw new Error("Member not found");
 
-    member.changeStatus(
+    member.updateStatus(
       new MemberStatusLeft({
         leaveDate: new Date(),
       })

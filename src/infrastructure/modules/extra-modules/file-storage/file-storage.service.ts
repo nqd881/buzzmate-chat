@@ -1,7 +1,8 @@
 import {
-  ChatFilePath,
   IFileStorageService,
+  MessageFilePath,
 } from "@application/ports/interface/file-storage";
+import { File } from "@domain/models/file";
 import { CreateReadStreamOptions } from "@google-cloud/storage";
 import { Injectable } from "@nestjs/common";
 import { GCloudStorageService } from "../gcloud-storage/gcloud-storage.service";
@@ -10,30 +11,30 @@ import { GCloudStorageService } from "../gcloud-storage/gcloud-storage.service";
 export class FileStorageService implements IFileStorageService {
   constructor(private readonly gcsService: GCloudStorageService) {}
 
-  private resolvePath(path: ChatFilePath) {
-    const { chatId, fileId } = path;
+  private resolveMessageFilePath(path: MessageFilePath) {
+    const { chatId, messageId } = path;
 
-    return [chatId.value, fileId.value].join("/");
+    return [chatId.value, messageId.value].join("/");
   }
 
-  async copyChatFile(
-    sourcePath: ChatFilePath,
-    destPath: ChatFilePath
-  ): Promise<any> {
-    const sourceFilePath = this.resolvePath(sourcePath);
+  createMessageFileReadStream(
+    path: MessageFilePath,
+    options?: CreateReadStreamOptions
+  ) {
+    const stringPath = this.resolveMessageFilePath(path);
 
-    const destFilePath = this.resolvePath(destPath);
+    const gcsFile = this.gcsService.getFile(stringPath);
 
-    const sourceFile = this.gcsService.getFile(sourceFilePath);
-
-    const destFile = this.gcsService.getFile(destFilePath);
-
-    return sourceFile.copy(destFile);
+    return gcsFile.createReadStream(options);
   }
 
-  saveChatFile(path: ChatFilePath, content: Buffer): Promise<void> {
+  saveMessageFile(
+    path: MessageFilePath,
+    file: File,
+    content: Buffer
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
-      const stringPath = this.resolvePath(path);
+      const stringPath = this.resolveMessageFilePath(path);
 
       const gcsFile = this.gcsService.getFile(stringPath);
 
@@ -51,14 +52,18 @@ export class FileStorageService implements IFileStorageService {
     });
   }
 
-  getChatFileReadStream(
-    path: ChatFilePath,
-    options?: CreateReadStreamOptions
-  ): NodeJS.ReadableStream {
-    const stringPath = this.resolvePath(path);
+  async copyMessageFile(
+    sourcePath: MessageFilePath,
+    destPath: MessageFilePath
+  ) {
+    const stringSourcePath = this.resolveMessageFilePath(sourcePath);
 
-    const gcsFile = this.gcsService.getFile(stringPath);
+    const stringDestPath = this.resolveMessageFilePath(destPath);
 
-    return gcsFile.createReadStream(options);
+    const sourceFile = this.gcsService.getFile(stringSourcePath);
+
+    const destFile = this.gcsService.getFile(stringDestPath);
+
+    return sourceFile.copy(destFile);
   }
 }

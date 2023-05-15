@@ -24,7 +24,7 @@ export class PinMessagesService implements ICommandHandler {
     );
     const { shouldPin } = command;
 
-    const member = await this.memberRepo.findOneInChatByUserId(chatId, userId);
+    const member = await this.memberRepo.findMemberByUserId(chatId, userId);
 
     if (!member) throw new Error("Member not found");
 

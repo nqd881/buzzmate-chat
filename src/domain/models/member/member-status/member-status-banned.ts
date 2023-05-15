@@ -1,4 +1,4 @@
-import { MemberStatus, MemberStatusProps } from "../member-status";
+import { MemberStatus } from "../member-status";
 
 export interface MemberStatusBannedProps {
   bannedDate: Date;
@@ -6,7 +6,7 @@ export interface MemberStatusBannedProps {
 }
 
 export class MemberStatusBanned extends MemberStatus<MemberStatusBannedProps> {
-  constructor(props: MemberStatusProps<MemberStatusBannedProps>) {
+  constructor(props: MemberStatusBannedProps) {
     super(props);
   }
 

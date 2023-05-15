@@ -77,4 +77,16 @@ export class ChatDomainService {
 
     return newInvitation;
   }
+
+  static validateMemberCanEditChatPhoto(chat: Chat, member: Member) {
+    if (!chat) throw new Error("Chat cannot be null");
+
+    if (!member) throw new Error("Member cannot be null");
+
+    if (!chat.id.equals(member.chatId)) throw new Error("Member is invalid");
+
+    if (!member.isActive()) throw new Error("Member is inactive");
+  }
+
+  static validateMemberCanEditNickname() {}
 }

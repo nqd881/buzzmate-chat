@@ -1,5 +1,5 @@
 import { WebPage } from "@domain/models/webpage";
-import { MessageContent, MessageContentProps } from "../message-content";
+import { MessageContent } from "./interface/message-content";
 
 export interface IMessageContentTextProps {
   text: string;
@@ -7,7 +7,7 @@ export interface IMessageContentTextProps {
 }
 
 export class MessageContentText extends MessageContent<IMessageContentTextProps> {
-  constructor(props: MessageContentProps<IMessageContentTextProps>) {
+  constructor(props: IMessageContentTextProps) {
     super(props);
   }
 
@@ -25,5 +25,13 @@ export class MessageContentText extends MessageContent<IMessageContentTextProps>
     content: MessageContent<any>
   ): content is MessageContentText {
     return content instanceof MessageContentText;
+  }
+
+  hasFile() {
+    return false;
+  }
+
+  getFile() {
+    return null;
   }
 }

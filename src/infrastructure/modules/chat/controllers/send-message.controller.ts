@@ -1,4 +1,5 @@
 import { SendMessageCommand } from "@application/commands/chat/send-message/send-message.command";
+import { FindMessagesQuery } from "@application/queries/find-messages/find-messages.query";
 import { AuthGuard } from "@infrastructure/guards/auth.guard";
 import {
   Body,
@@ -6,15 +7,14 @@ import {
   Param,
   Post,
   Req,
-  UploadedFiles,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { FilesInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { Request } from "express";
 import { SendMessageRequestDto } from "./dto/send-message.dto";
-import { FindMessagesQuery } from "@application/queries/find-messages/find-messages.query";
 
 @Controller("chats/:chat_id")
 export class SendMessageController {
@@ -24,13 +24,13 @@ export class SendMessageController {
   ) {}
 
   @Post("messages")
-  @UseInterceptors(FilesInterceptor("files"))
+  @UseInterceptors(FileInterceptor("file"))
   @UseGuards(AuthGuard)
   async sendMessage(
     @Req() req: Request,
     @Param("chat_id") chatId: string,
     @Body() body: SendMessageRequestDto,
-    @UploadedFiles() files: Express.Multer.File[]
+    @UploadedFile() file: Express.Multer.File
   ) {
     const { prepareMessageId, message, replyToMessageId } = body;
 
@@ -42,12 +42,12 @@ export class SendMessageController {
       chatId,
       message,
       replyToMessageId,
-      files: files.map((file) => ({
+      file: {
         name: file.originalname,
         mimetype: file.mimetype,
         size: file.size,
         content: file.buffer,
-      })),
+      },
     });
 
     let newMessage = null;

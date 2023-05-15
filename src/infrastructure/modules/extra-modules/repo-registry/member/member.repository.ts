@@ -29,18 +29,23 @@ export class MemberRepository
     super(dbModel, domainEventBus, mapper);
   }
 
-  async findInChat(chatId: ChatId, options?: FindInChatOptions) {
-    const { memberIds } = options;
+  async findMembers(chatId: ChatId, options?: FindInChatOptions) {
+    const { memberIds, userIds } = options;
 
     const docs = await this.dbModel.find({
       chatId: chatId.value,
-      _id: memberIds.map((memberId) => memberId.value),
+      _id: Boolean(memberIds?.length)
+        ? memberIds.map((memberId) => memberId.value)
+        : {},
+      userId: Boolean(userIds?.length)
+        ? userIds.map((userId) => userId.value)
+        : {},
     });
 
     return docs.map((doc) => this.mapper.toDomain(doc));
   }
 
-  async findOneInChatByUserId(chatId: ChatId, userId: UserId) {
+  async findMemberByUserId(chatId: ChatId, userId: UserId) {
     const doc = await this.dbModel.findOne({
       chatId: chatId.value,
       userId: userId.value,
@@ -49,15 +54,7 @@ export class MemberRepository
     return this.mapper.toDomain(doc);
   }
 
-  async findManyByUserId(userId: UserId) {
-    const docs = await this.dbModel.find({
-      userId: userId.value,
-    });
-
-    return docs.map((doc) => this.mapper.toDomain(doc));
-  }
-
-  async countActiveMembersOfChat(chatId: ChatId) {
+  async countActiveMembers(chatId: ChatId) {
     const count = await this.dbModel.countDocuments({
       chatId: chatId.value,
       "status.type": MemberStatusActive.name,

@@ -23,7 +23,7 @@ export class HideMessagesService implements ICommandHandler {
       (messageId) => new MessageId(messageId)
     );
 
-    const member = await this.memberRepo.findOneInChatByUserId(chatId, userId);
+    const member = await this.memberRepo.findMemberByUserId(chatId, userId);
 
     if (!member) throw new Error("Member not found");
 

@@ -30,7 +30,7 @@ export class InviteToChatService implements ICommandHandler {
 
     if (!chat) throw new Error("Chat not found");
 
-    const member = await this.memberRepo.findOneInChatByUserId(
+    const member = await this.memberRepo.findMemberByUserId(
       chatId,
       inviterUserId
     );

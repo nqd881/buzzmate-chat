@@ -7,7 +7,7 @@ import { MemberStatusLeft } from "./member-status/member-status-left";
 import { MemberStatus } from "./member-status";
 import { MemberCreatedDomainEvent } from "./events/member-created";
 import { MemberStatusChangedDomainEvent } from "./events/member-status-changed";
-import { IChatResource } from "../interfaces/chat-resource";
+import { MemberNicknameEditedDomainEvent } from "./events/member-nickname-edited";
 
 export interface IMemberProps {
   chatId: ChatId;
@@ -21,10 +21,7 @@ export interface IMemberProps {
 
 export class MemberId extends EntityId {}
 
-export class Member
-  extends AggregateRoot<MemberId, IMemberProps>
-  implements IChatResource
-{
+export class Member extends AggregateRoot<MemberId, IMemberProps> {
   protected _chatId: ChatId;
   protected _userId: UserId;
   protected _name: string;
@@ -111,7 +108,7 @@ export class Member
     return this.status.type === MemberStatusLeft.name;
   }
 
-  changeStatus(status: MemberStatus<any>) {
+  updateStatus(status: MemberStatus<any>) {
     if (!this.isActive()) return;
 
     if (this.status.equals(status)) return;
@@ -131,9 +128,18 @@ export class Member
     );
   }
 
-  changeNickname(nickname: string) {
+  editNickname(editor: Member, nickname: string) {
     this.update(() => {
       this._nickname = nickname;
     });
+
+    this.addEvent(
+      new MemberNicknameEditedDomainEvent({
+        aggregateId: this.id,
+        chatId: this.chatId,
+        editedMemberId: this.id,
+        editorMemberId: editor.id,
+      })
+    );
   }
 }

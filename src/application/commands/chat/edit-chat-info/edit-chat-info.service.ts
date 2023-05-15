@@ -23,7 +23,7 @@ export class EditChatInfoService implements ICommandHandler {
 
     const [chat, member] = await Promise.all([
       this.chatRepo.findOneById(chatId),
-      this.memberRepo.findOneInChatByUserId(chatId, userId),
+      this.memberRepo.findMemberByUserId(chatId, userId),
     ]);
 
     if (!chat) throw new Error("Chat not found");
@@ -31,7 +31,7 @@ export class EditChatInfoService implements ICommandHandler {
     if (!member) throw new Error("Member not found");
 
     if (title) chat.editTitle(title);
-    if (description) chat.editDescription(description);
+    if (description) chat.editDescription(member, description);
 
     await this.chatRepo.save(chat);
   }

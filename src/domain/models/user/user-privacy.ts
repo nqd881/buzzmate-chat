@@ -1,4 +1,4 @@
-import {ValueObject, ValueObjectProps} from "@libs/ddd";
+import { ValueObject } from "@libs/ddd";
 
 export enum UserScopes {
   EVERYBODY = "everybody",
@@ -10,7 +10,7 @@ export interface IUserPrivacyProps {
 }
 
 export class UserPrivacy extends ValueObject<IUserPrivacyProps> {
-  constructor(props: ValueObjectProps<IUserPrivacyProps>) {
+  constructor(props: IUserPrivacyProps) {
     super(props);
   }
 

@@ -12,7 +12,7 @@ export class SendMessageCommand extends Command {
   public readonly chatId: string;
   public readonly message?: string;
   public readonly replyToMessageId?: string;
-  public readonly files?: InputFile[];
+  public readonly file?: InputFile;
 
   constructor(props: CommandProps<SendMessageCommand>) {
     super(props);
@@ -21,6 +21,6 @@ export class SendMessageCommand extends Command {
     this.chatId = props.chatId;
     this.message = props.message;
     this.replyToMessageId = props.replyToMessageId;
-    this.files = props?.files || [];
+    this.file = props?.file;
   }
 }

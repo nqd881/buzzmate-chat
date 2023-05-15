@@ -1,4 +1,5 @@
 import { MessageContentText } from "@domain/models/message/message-content/text.content";
+import { MemberBasePipeline } from "../member-query-repo/pipelines";
 import {
   AggOps,
   Expr,
@@ -8,15 +9,17 @@ import {
   Set,
   Unwind,
 } from "../shared/common";
-import { MessageContentMedia } from "@domain/models/message/message-content/media.content";
-import { VideoBasePipeline } from "../video-query-repo/pipelines";
-import { PhotoBasePipeline } from "../photo-query-repo/pipelines";
-import { DocumentBasePipeline } from "../document-query-repo/pipelines";
-import { MemberBasePipeline } from "../member-query-repo/pipelines";
+import { MessageContentPhoto } from "@domain/models/message/message-content/photo.content";
+import { MessageContentAudio } from "@domain/models/message/message-content/audio.content";
+import { MessageContentVideo } from "@domain/models/message/message-content/video.content";
+import { MessageContentDocument } from "@domain/models/message/message-content/document.content";
+import { HOST } from "../shared/constants";
+
+const PROTOCOL = "http";
 
 export const MessageBasePipeline = [
+  Set({ id: "$_id" }),
   Set({
-    id: "$_id",
     "content.text": AggOps.Switch(
       [
         {
@@ -24,25 +27,104 @@ export const MessageBasePipeline = [
           then: "$content.text",
         },
         {
-          case: AggOps.Eq("$content.contentType", MessageContentMedia.name),
+          case: AggOps.In("$content.contentType", [
+            MessageContentPhoto.name,
+            MessageContentVideo.name,
+            MessageContentAudio.name,
+            MessageContentDocument.name,
+          ]),
           then: "$content.caption",
         },
       ],
       null
     ),
-    "content.photoIds": AggOps.Cond(
-      AggOps.Eq("$content.contentType", MessageContentMedia.name),
-      "$content.photoIds",
+    "content.photo": AggOps.Cond(
+      AggOps.Eq("$content.contentType", MessageContentPhoto.name),
+      {
+        height: "$content.photo.height",
+        width: "$content.photo.width",
+        size: "$content.photo.file.size",
+        mimetype: "$content.photo.file.mimetype",
+        url: {
+          $concat: [
+            PROTOCOL,
+            "://",
+            HOST,
+            "/api/chat-svc/chats/",
+            "$chatId",
+            "/messages/",
+            "$id",
+            "/file",
+          ],
+        },
+      },
       []
     ),
-    "content.videoIds": AggOps.Cond(
-      AggOps.Eq("$content.contentType", MessageContentMedia.name),
-      "$content.videoIds",
+    "content.video": AggOps.Cond(
+      AggOps.Eq("$content.contentType", MessageContentVideo.name),
+      {
+        height: "$content.video.height",
+        width: "$content.video.width",
+        duration: "$content.video.duration",
+        thumbnail: null,
+        size: "$content.video.file.size",
+        mimetype: "$content.video.file.mimetype",
+        url: {
+          $concat: [
+            PROTOCOL,
+            "://",
+            HOST,
+            "/api/chat-svc/chats/",
+            "$chatId",
+            "/messages/",
+            "$id",
+            "/file",
+          ],
+        },
+      },
       []
     ),
-    "content.documentIds": AggOps.Cond(
-      AggOps.Eq("$content.contentType", MessageContentMedia.name),
-      "$content.documentIds",
+    "content.audio": AggOps.Cond(
+      AggOps.Eq("$content.contentType", MessageContentAudio.name),
+      {
+        title: "$content.audio.title",
+        duration: "$content.audio.duration",
+        size: "$content.audio.file.size",
+        mimetype: "$content.audio.file.mimetype",
+        url: {
+          $concat: [
+            PROTOCOL,
+            "://",
+            HOST,
+            "/api/chat-svc/chats/",
+            "$chatId",
+            "/messages/",
+            "$id",
+            "/file",
+          ],
+        },
+      },
+      []
+    ),
+    "content.document": AggOps.Cond(
+      AggOps.Eq("$content.contentType", MessageContentDocument.name),
+      {
+        duration: "$content.document.file.name",
+        size: "$content.document.file.size",
+        mimetype: "$content.document.file.mimetype",
+        url: {
+          $concat: [
+            PROTOCOL,
+            "://",
+            HOST,
+            "/api/chat-svc/chats/",
+            "$chatId",
+            "/messages/",
+            "$id",
+            "/file",
+          ],
+        },
+      },
       []
     ),
   }),
@@ -69,36 +151,19 @@ export const MessageBasePipeline = [
   Set({
     sentByMember: AggOps.IfNull("$sentByMember", {}),
   }),
-  Lookup(
-    "dbphotos",
-    {
-      photoIds: "$content.photoIds",
-    },
-    [Match(Expr(AggOps.In("$_id", "$$photoIds"))), ...PhotoBasePipeline],
-    "content.photos"
-  ),
-  Lookup(
-    "dbvideos",
-    {
-      videoIds: "$content.videoIds",
-    },
-    [Match(Expr(AggOps.In("$_id", "$$videoIds"))), ...VideoBasePipeline],
-    "content.videos"
-  ),
-  Lookup(
-    "dbdocuments",
-    {
-      documentIds: "$content.documentIds",
-    },
-    [Match(Expr(AggOps.In("$_id", "$$documentIds"))), ...DocumentBasePipeline],
-    "content.documents"
-  ),
   Project({
     Id: false,
     Include: {
       id: 1,
       chatId: 1,
       senderUserId: 1,
+      content: {
+        text: 1,
+        photo: 1,
+        video: 1,
+        audio: 1,
+        document: 1,
+      },
       date: 1,
       editDate: 1,
       replyToMessageId: 1,
@@ -107,13 +172,6 @@ export const MessageBasePipeline = [
       views: 1,
       reactions: 1,
       sentByMember: 1,
-    },
-    Fields: {
-      "content.text": "$content.text",
-      "content.hasMedia": "$content.hasMedia",
-      "content.photos": "$content.photos",
-      "content.videos": "$content.videos",
-      "content.documents": "$content.documents",
     },
   }),
 ];

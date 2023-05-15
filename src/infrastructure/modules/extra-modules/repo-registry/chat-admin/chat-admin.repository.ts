@@ -26,7 +26,7 @@ export class ChatAdminRepository
     super(dbModel, domainEventBus, mapper);
   }
 
-  async findOneInChatByUserId(chatId: ChatId, userId: UserId) {
+  async findMemberByUserId(chatId: ChatId, userId: UserId) {
     const doc = await this.dbModel.findOne({
       chatId: chatId.value,
       userId: userId.value,

@@ -1,4 +1,4 @@
-import { ValueObject, ValueObjectProps } from "@libs/ddd";
+import { ValueObject } from "@libs/ddd";
 import { MemberId } from "../member/member";
 
 export type MessageReactionValue = string;
@@ -9,7 +9,7 @@ export interface IMessageReactionProps {
 }
 
 export class MessageReaction extends ValueObject<IMessageReactionProps> {
-  constructor(props: ValueObjectProps<IMessageReactionProps>) {
+  constructor(props: IMessageReactionProps) {
     super(props);
   }
 

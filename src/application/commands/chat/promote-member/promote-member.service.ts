@@ -24,7 +24,7 @@ export class PromoteMemberService implements ICommandHandler {
     const memberId = new MemberId(command.memberId);
 
     const [admin, member] = await Promise.all([
-      this.chatAdminRepo.findOneInChatByUserId(chatId, adminUserId),
+      this.chatAdminRepo.findMemberByUserId(chatId, adminUserId),
       this.memberRepo.findOneById(memberId),
     ]);
 
@@ -32,7 +32,7 @@ export class PromoteMemberService implements ICommandHandler {
 
     if (!member) throw new Error("Member not found");
 
-    const existAdmin = await this.chatAdminRepo.findOneInChatByUserId(
+    const existAdmin = await this.chatAdminRepo.findMemberByUserId(
       chatId,
       member.userId
     );

@@ -25,17 +25,17 @@ export class BanMembersService implements ICommandHandler {
 
     const { reason } = command;
 
-    const admin = await this.chatAdminRepo.findOneInChatByUserId(
+    const admin = await this.chatAdminRepo.findMemberByUserId(
       chatId,
       adminUserId
     );
 
     if (!admin) throw new Error("Admin not found");
 
-    const members = await this.memberRepo.findInChat(chatId, { memberIds });
+    const members = await this.memberRepo.findMembers(chatId, { memberIds });
 
     members.forEach((member) => {
-      member.changeStatus(
+      member.updateStatus(
         new MemberStatusBanned({
           bannedDate: new Date(),
           reason,

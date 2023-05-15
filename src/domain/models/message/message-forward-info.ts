@@ -1,7 +1,7 @@
-import {ValueObject, ValueObjectProps} from "@libs/ddd";
-import {ChatId} from "../chat/chat";
-import {UserId} from "../user/user";
-import {MessageId} from "./message";
+import { ValueObject } from "@libs/ddd";
+import { ChatId } from "../chat/chat";
+import { UserId } from "../user/user";
+import { MessageId } from "./message";
 
 export interface IMessageForwardInfoProps {
   fromChatId: ChatId;
@@ -10,7 +10,7 @@ export interface IMessageForwardInfoProps {
 }
 
 export class MessageForwardInfo extends ValueObject<IMessageForwardInfoProps> {
-  constructor(props: ValueObjectProps<IMessageForwardInfoProps>) {
+  constructor(props: IMessageForwardInfoProps) {
     super(props);
   }
 

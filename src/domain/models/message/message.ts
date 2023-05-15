@@ -5,13 +5,12 @@ import { MessageReactionAddedDomainEvent } from "@domain/models/message/events/m
 import { MessageReactionsOfMemberClearedDomainEvent } from "@domain/models/message/events/message-reactions-of-member-cleared";
 import { AggregateRoot, EntityId } from "@libs/ddd";
 import { ChatId } from "../chat/chat";
+import { MemberId } from "../member/member";
 import { UserId } from "../user/user";
 import { MessageUnpinnedDomainEvent } from "./events/message-unpined";
-import { MessageContent } from "./message-content";
+import { MessageContent } from "./message-content/interface/message-content";
 import { MessageForwardInfo } from "./message-forward-info";
 import { MessageReaction } from "./message-reaction";
-import { MemberId } from "../member/member";
-import { IChatResource } from "../interfaces/chat-resource";
 
 export interface IMessageProps<T extends MessageContent<any>> {
   chatId: ChatId;
@@ -26,12 +25,17 @@ export interface IMessageProps<T extends MessageContent<any>> {
   reactions: MessageReaction[];
 }
 
+export type ICreateMessageProps<T extends MessageContent<any>> = Omit<
+  IMessageProps<T>,
+  "isPinned" | "isHidden" | "date" | "editDate" | "reactions"
+>;
+
 export class MessageId extends EntityId {}
 
-export class Message<T extends MessageContent<any>>
-  extends AggregateRoot<MessageId, IMessageProps<T>>
-  implements IChatResource
-{
+export class Message<T extends MessageContent<any>> extends AggregateRoot<
+  MessageId,
+  IMessageProps<T>
+> {
   protected _chatId: ChatId;
   protected _senderUserId: UserId;
   protected _content: T;
@@ -69,10 +73,21 @@ export class Message<T extends MessageContent<any>>
   validate() {}
 
   static create<T extends MessageContent<any>>(
-    props: IMessageProps<T>,
+    props: ICreateMessageProps<T>,
     id?: MessageId
   ) {
-    const newMessage = new Message(props, 0, id);
+    const newMessage = new Message(
+      {
+        ...props,
+        isPinned: false,
+        isHidden: false,
+        date: new Date(),
+        editDate: null,
+        reactions: [],
+      },
+      0,
+      id
+    );
 
     newMessage.addEvent(
       new MessageCreatedDomainEvent({

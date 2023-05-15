@@ -1,9 +1,9 @@
-import { MemberStatus, MemberStatusProps } from "../member-status";
+import { MemberStatus } from "../member-status";
 
 export interface MemberStatusActiveProps {}
 
 export class MemberStatusActive extends MemberStatus<MemberStatusActiveProps> {
-  constructor(props: MemberStatusProps<MemberStatusActiveProps>) {
+  constructor(props: MemberStatusActiveProps) {
     super(props);
   }
 

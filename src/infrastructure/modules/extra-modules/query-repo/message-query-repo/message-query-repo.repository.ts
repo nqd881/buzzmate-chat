@@ -19,8 +19,6 @@ import {
 } from "../shared/common";
 import { MongoUtils } from "../shared/mongo-utils";
 import { MessageBasePipeline } from "./pipelines";
-import { plainToClass } from "class-transformer";
-import { MessageQueryModel } from "./model";
 
 @Injectable()
 export class MessageQueryRepo implements IMessageQueryRepo {

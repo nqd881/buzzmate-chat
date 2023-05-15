@@ -22,43 +22,47 @@ export interface IMemberQueryModel {
   isOwner?: boolean;
 }
 
-export interface IFileQueryModel {
-  id: string;
-  name: string;
-  size: number;
-  mimetype: string;
-  date: Date;
-}
-
 export interface IPhotoQueryModel {
-  id: string;
   width: number;
   height: number;
-  file: IFileQueryModel;
+  size: number;
+  mimetype: string;
   url: string;
 }
 
+export interface IVideoThumbnailQueryModel {}
+
 export interface IVideoQueryModel {
-  id: string;
   width: number;
   height: number;
   duration: number;
-  thumbnail: any;
-  file: IFileQueryModel;
+  thumbnail: IVideoThumbnailQueryModel;
+  size: number;
+  mimetype: string;
   url: string;
 }
 
 export interface IDocumentQueryModel {
-  id: string;
-  file: IFileQueryModel;
+  fileName: string;
+  size: number;
+  mimetype: string;
+  url: string;
+}
+
+export interface IAudioQueryModel {
+  title: string;
+  duration: number;
+  size: number;
+  mimetype: string;
   url: string;
 }
 
 export interface IMessageContentQueryModel {
   text: string;
-  photos: IPhotoQueryModel[];
-  videos: IVideoQueryModel[];
-  documents: IDocumentQueryModel[];
+  photo: IPhotoQueryModel;
+  video: IVideoQueryModel;
+  audio: IAudioQueryModel;
+  document: IDocumentQueryModel;
 }
 
 export interface IMessageForwardInfoQueryModel {

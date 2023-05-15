@@ -1,31 +1,19 @@
 import _ from "lodash";
-import {Guard} from "./guard";
-
-export type Primitives = string | number | boolean;
-
-export interface DomainPrimitive<T extends Primitives | Date> {
-  __value: T;
-}
-
-export type ValueObjectProps<T> = T extends Primitives | Date
-  ? DomainPrimitive<T>
-  : T;
+import { IClonable } from "@domain/interfaces/clonable.interface";
 
 export interface ValueObjectType<T> {
-  new (props: ValueObjectProps<T>): ValueObject<T>;
+  new (props: T): ValueObject<T>;
 }
-
 export abstract class ValueObject<T> {
-  protected readonly props: ValueObjectProps<T>;
+  protected readonly props: T;
 
-  constructor(props: ValueObjectProps<T>) {
-    // this.checkIfEmpty(props);
+  constructor(props: T) {
     this.validate(props);
 
     this.props = props;
   }
 
-  protected abstract validate(props: ValueObjectProps<T>): void;
+  protected abstract validate(props: T): void;
 
   static isValueObject(obj: unknown): obj is ValueObject<unknown> {
     return obj instanceof ValueObject;
@@ -38,25 +26,7 @@ export abstract class ValueObject<T> {
     return JSON.stringify(this) === JSON.stringify(vo);
   }
 
-  // private checkIfEmpty(props: ValueObjectProps<T>): void {
-  //   if (
-  //     Guard.isEmpty(props) ||
-  //     (this.isDomainPrimitive(props) && Guard.isEmpty(props.__value))
-  //   ) {
-  //     throw new Error("Property cannot be empty");
-  //   }
-  // }
-
-  // private isDomainPrimitive(
-  //   obj: unknown
-  // ): obj is DomainPrimitive<T & (Primitives | Date)> {
-  //   if (Object.prototype.hasOwnProperty.call(obj, "__value")) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
-
-  cloneWith(props: Partial<ValueObjectProps<T>>) {
+  cloneWith(props: Partial<T>) {
     const copyThisProps = Object.assign({}, this.props);
 
     return new (this.constructor as ValueObjectType<T>)(

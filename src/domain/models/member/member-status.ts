@@ -1,9 +1,7 @@
-import { ValueObject, ValueObjectProps } from "@libs/ddd";
-
-export type MemberStatusProps<T> = ValueObjectProps<T>;
+import { ValueObject } from "@libs/ddd";
 
 export abstract class MemberStatus<T> extends ValueObject<T> {
-  constructor(props: MemberStatusProps<T>) {
+  protected constructor(props: T) {
     super(props);
   }
 

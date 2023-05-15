@@ -24,9 +24,7 @@ export class UpdateMemberCount {
 
     if (!chat) throw new Error("Chat not found");
 
-    const newMemberCount = await this.memberRepo.countActiveMembersOfChat(
-      chatId
-    );
+    const newMemberCount = await this.memberRepo.countActiveMembers(chatId);
 
     chat.updateMemberCount(newMemberCount);
 
